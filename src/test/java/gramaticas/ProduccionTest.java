@@ -123,6 +123,40 @@ public class ProduccionTest {
         Produccion prod2 = new Produccion("A -> b");
         assertNotEquals(prod1.hashCode(), prod2.hashCode());
     }
+    
+    @Test
+    public void whenCallEsTerminalConTerminalExpectTrue() {
+        assertTrue(Produccion.esTerminal("a"));
+        assertTrue(Produccion.esTerminal("+"));
+        assertTrue(Produccion.esTerminal("("));
+        assertTrue(Produccion.esTerminal(")"));
+        assertTrue(Produccion.esTerminal("1"));
+    }
+    
+    @Test
+    public void whenCallEsTerminalConVariableExpectFalse() {
+        assertFalse(Produccion.esTerminal("A"));
+        assertFalse(Produccion.esTerminal("Z"));
+        assertFalse(Produccion.esTerminal("Y"));
+        assertFalse(Produccion.esTerminal("T"));
+    }
+    
+    @Test
+    public void whenCallEsVariableConTerminalExpectFalse() {
+        assertFalse(Produccion.esVariable("a"));
+        assertFalse(Produccion.esVariable("+"));
+        assertFalse(Produccion.esVariable("("));
+        assertFalse(Produccion.esVariable("5"));
+    }
+    
+    @Test
+    public void whenCallEsVariableConVariableExpectTrue() {
+        assertTrue(Produccion.esVariable("A"));
+        assertTrue(Produccion.esVariable("B"));
+        assertTrue(Produccion.esVariable("T"));
+        assertTrue(Produccion.esVariable("Z"));
+    }
+    
     @Test
     public void toStringTest() {
         String produccion = "S -> a";
