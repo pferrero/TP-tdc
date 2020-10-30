@@ -59,6 +59,14 @@ public class Produccion {
     public String getLadoDerecho() {
         return this.ladoDerecho;
     }
+ 
+    public static boolean esTerminal(String a) {
+        return !esVariable(a);
+    }
+    
+    public static boolean esVariable(String a) {
+        return a.matches("[A-Z]");
+    }
     
     @Override
     public int hashCode() {
