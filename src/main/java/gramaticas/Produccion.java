@@ -2,7 +2,7 @@ package gramaticas;
 
 public class Produccion {
 
-    public static final Character EPSILON = '\u03B5';
+    public static final String EPSILON = "\u03B5";
     
     private String ladoIzquierdo;
     private String ladoDerecho;

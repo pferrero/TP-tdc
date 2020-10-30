@@ -67,7 +67,7 @@ public class ProduccionTest {
         Produccion prod1  = new Produccion("A -> I(B)a");
         Produccion prod2 = new Produccion("B->"+Produccion.EPSILON);
         assertEquals("I(B)a", prod1.getLadoDerecho());
-        assertEquals(Produccion.EPSILON.charValue(), prod2.getLadoDerecho().charAt(0));
+        assertEquals(Produccion.EPSILON, prod2.getLadoDerecho());
     }
     
     @Test
