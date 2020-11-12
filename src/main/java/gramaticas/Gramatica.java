@@ -65,11 +65,7 @@ public class Gramatica {
             }            
         }
         return nulleables;
-    }
-    
-    public Set<String> getVariables(){
-        return new HashSet<String>(this.variables);
-    }
+    }    
     
     /*
      * Se fija si toda la cadena es nulleable, siendo nulleables las variables
@@ -85,6 +81,34 @@ public class Gramatica {
         return cadena.codePoints()
                 .mapToObj(c -> String.valueOf((char) c))
                 .allMatch(nulleables::contains);
+    }
+
+    public Collection<String> getVariables(){
+        return new HashSet<String>(this.variables);
+    }
+    
+    public Collection<Produccion> getProducciones() {
+        return new HashSet<Produccion>(this.producciones);
+    }
+    
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + producciones.hashCode();
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Gramatica other = (Gramatica) obj;
+        return producciones.equals(other.producciones);
     }
     
 }
