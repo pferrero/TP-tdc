@@ -117,4 +117,61 @@ public class LimpiadorDeGramaticasTest {
         g1.agregarProduccion(prod8);
         assertEquals(g1, ldg.eliminarProduccionesEpsilon(gram));
     }
+
+    @Test
+    public void whenLaGramaticaEsVaciaExpectMismaGramatica() {
+        Gramatica g = new Gramatica();
+        assertEquals(new Gramatica(), ldg.eliminarProduccionesUnitarias(g));
+    }
+    
+    @Test
+    public void whenLaGramaticaNoTieneProduccionesUnitariasExpectMismaGramatica() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("S->AB"));
+        g.agregarProduccion(new Produccion("A -> a"));
+        assertEquals(g, ldg.eliminarProduccionesUnitarias(g));
+    }
+    
+    @Test
+    public void whenLaGramaticaTieneUnaProduccionUnitariaExpectNuevaGramatica() {
+        Gramatica g = new Gramatica();
+        Produccion prod1 = new Produccion("S->A");
+        Produccion prod2 = new Produccion("A->a");
+        g.agregarProduccion(prod1);
+        g.agregarProduccion(prod2);
+        Gramatica g1 = new Gramatica();
+        g1.agregarProduccion(prod2);
+        g1.agregarProduccion(new Produccion("S->a"));
+        assertEquals(g1, ldg.eliminarProduccionesUnitarias(g));
+    }
+    
+    @Test
+    public void whenLaGramaticaTieneUnaCadenaDeProduccionesUnitariasExpectNuevaGramatica() {
+        Gramatica g = new Gramatica();
+        Produccion prod1 = new Produccion("S->AB");
+        Produccion prod2 = new Produccion("S->CD");
+        Produccion prod3 = new Produccion("S->C");
+        Produccion prod4 = new Produccion("A->B");
+        Produccion prod5 = new Produccion("B->C");
+        Produccion prod6 = new Produccion("C->D");
+        Produccion prod7 = new Produccion("C->E");
+        Produccion prod8 = new Produccion("E->BD");
+        g.agregarProduccion(prod1);
+        g.agregarProduccion(prod2);
+        g.agregarProduccion(prod3);
+        g.agregarProduccion(prod4);
+        g.agregarProduccion(prod5);
+        g.agregarProduccion(prod6);
+        g.agregarProduccion(prod7);
+        g.agregarProduccion(prod8);
+        Gramatica g1 = new Gramatica();
+        g1.agregarProduccion(prod1);
+        g1.agregarProduccion(prod2);
+        g1.agregarProduccion(new Produccion("S->BD"));
+        g1.agregarProduccion(prod8);
+        g1.agregarProduccion(new Produccion("C->BD"));
+        g1.agregarProduccion(new Produccion("B->BD"));
+        g1.agregarProduccion(new Produccion("A->BD"));
+        assertEquals(g1, ldg.eliminarProduccionesUnitarias(g));
+    }
 }

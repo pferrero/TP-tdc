@@ -3,6 +3,8 @@ package gramaticas;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 public class LimpiadorDeGramaticas {
@@ -72,6 +74,62 @@ public class LimpiadorDeGramaticas {
                     sb.append(simbolos.charAt(j));
             ret[i] = sb.toString();
         }        
+        return ret;
+    }
+
+    private class ParUnitario {
+        private String varIzquierda;
+        private String varDerecha;
+        public ParUnitario(String izq, String der) {
+            this.varIzquierda = izq;
+            this.varDerecha   = der;
+        }
+        public String getVarIzquierda() {
+            return varIzquierda;
+        }
+        public String getVarDerecha() {
+            return varDerecha;
+        }
+    }
+    /*
+     * Recibe una gramática g y devuelve una gramática g1 sin producciones
+     * unitarias.
+     */
+    public Gramatica eliminarProduccionesUnitarias(Gramatica g) {
+        Gramatica g1 = new Gramatica();
+        Collection<ParUnitario> pares = getParesUnitarios(g);
+        /* Para cada par unitario (A,B), agregar a P1 todas las
+         * producciones A->alfa, donde B->alfa es una produccion no
+         * unitaria en P.
+         */
+        pares.forEach( pu -> {
+            g.getProducciones()
+              .stream()
+              .filter(p -> p.getLadoIzquierdo().equals(pu.getVarDerecha()))
+              .filter(p -> !p.esUnitaria())
+              .map(p -> new Produccion(pu.getVarIzquierda() + "->" + p.getLadoDerecho()))
+              .forEach(g1::agregarProduccion);
+        });
+        return g1;
+    }
+
+    private Collection<ParUnitario> getParesUnitarios(Gramatica g) {
+        Collection<ParUnitario> ret = new HashSet<>();
+        Collection<Produccion> produccionesUnitarias = g.getProduccionesUnitarias();
+        Queue<ParUnitario> puQueue = new LinkedList<ParUnitario>();
+        //Caso base: Agrego los pares (A,A) para cada variable A.
+        g.getVariables().stream()
+               .forEach(A -> puQueue.add(new ParUnitario(A,A)));
+        //Caso inductivo: Si encontramos (A,B) y B->C es unitaria, agregar (A,C)
+        while (puQueue.size() != 0) {
+            ParUnitario pu = puQueue.poll();
+            produccionesUnitarias
+                .stream()
+                .filter(p -> p.getLadoIzquierdo().equals(pu.getVarDerecha()))
+                .map(p -> new ParUnitario(pu.getVarIzquierda(), p.getLadoDerecho()))
+                .forEach(puQueue::add);
+            ret.add(pu);
+        }
         return ret;
     }
 }
