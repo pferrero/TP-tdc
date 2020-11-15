@@ -30,9 +30,9 @@ public class Gramatica {
         for (int i = 0; i < prod.getLadoDerecho().length(); i++) {
             char caracter = prod.getLadoDerecho().charAt(i);
             if (Produccion.esTerminal(String.valueOf(caracter))) {
-                terminales.add(prod.getLadoDerecho());
+                terminales.add(String.valueOf(caracter));
             } else {
-                variables.add(prod.getLadoDerecho());
+                variables.add(String.valueOf(caracter));
             }
         }
         producciones.add(prod);
@@ -89,6 +89,19 @@ public class Gramatica {
     
     public Collection<Produccion> getProducciones() {
         return new HashSet<Produccion>(this.producciones);
+    }
+    
+    public Collection<Produccion> getProduccionesUnitarias() {
+        return this.producciones
+                .stream()
+                .filter(Produccion::esUnitaria)
+                .collect(Collectors.toSet());
+    }
+    
+    public Collection<Produccion> getProduccionesDeVariable(String var) {
+        return this.producciones
+                .stream().filter(p -> p.getLadoIzquierdo().equals(var))
+                .collect(Collectors.toSet());
     }
     
     @Override
