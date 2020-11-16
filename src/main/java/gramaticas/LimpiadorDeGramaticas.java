@@ -41,7 +41,7 @@ public class LimpiadorDeGramaticas {
                     ladoDerecho.append(simbolo);
             }
             if (!ladoDerecho.toString().isEmpty())
-                ret.add(new Produccion(prod.getLadoIzquierdo() + "->" + ladoDerecho));
+                ret.add(new Produccion(prod.getLadoIzquierdo(), ladoDerecho.toString()));
         }
         return ret;
     }
@@ -107,7 +107,7 @@ public class LimpiadorDeGramaticas {
               .stream()
               .filter(p -> p.getLadoIzquierdo().equals(pu.getVarDerecha()))
               .filter(p -> !p.esUnitaria())
-              .map(p -> new Produccion(pu.getVarIzquierda() + "->" + p.getLadoDerecho()))
+              .map(p -> new Produccion(pu.getVarIzquierda(), p.getLadoDerecho()))
               .forEach(g1::agregarProduccion);
         });
         return g1;

@@ -6,7 +6,11 @@ public class Produccion {
     
     private String ladoIzquierdo;
     private String ladoDerecho;
-    
+
+    public Produccion(String izq, String der) {
+        this(izq + "->" + der);
+    }
+
     public Produccion(String produccion) {
         if (!produccion.contains("->")) {
             errorDeFormato(produccion);
