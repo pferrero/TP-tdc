@@ -12,10 +12,8 @@ public class Gramatica {
     private Set<String>  terminales;
     private Set<String>  variables;
     private Set<Produccion> producciones;
-    private Character       varInicial;
     
     public Gramatica() {
-        this.varInicial = 'S';
         inicializarConjuntos();
     }
     
@@ -81,6 +79,36 @@ public class Gramatica {
         return cadena.codePoints()
                 .mapToObj(c -> String.valueOf((char) c))
                 .allMatch(nulleables::contains);
+    }
+
+    public Collection<String> getSimbolosGeneradores(){
+        Collection<String> ret = new HashSet<>();
+        /*
+         * Caso base: Agrego los símbolos terminales al conjunto
+         * de símbolos generadores.
+         */
+        terminales.forEach(ret::add);
+        /*
+         * Caso inductivo: Si existe A->alfa donde alfa esté comformada por
+         * símbolos en ret, entonces agrego A a ret.
+         */
+        boolean continuar = true;
+        while (continuar) {
+            int cant = ret.size();
+            producciones.forEach( p -> {
+                boolean agregar = true;
+                for(char c : p.getLadoDerecho().toCharArray()) {
+                    agregar = agregar && ret.contains(String.valueOf(c));
+                }
+                if (agregar)
+                    ret.add(p.getLadoIzquierdo());
+            });
+            if (ret.size() > cant)
+                continuar = true;
+            else
+                continuar = false;
+        }
+        return ret;
     }
 
     public Collection<String> getVariables(){

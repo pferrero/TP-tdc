@@ -2,6 +2,7 @@ package gramaticas;
 
 import static org.junit.Assert.*;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.junit.Test;
@@ -96,5 +97,42 @@ public class GramaticaTest {
         assertTrue(nulleables.contains(prod1.getLadoIzquierdo()));
         assertTrue(nulleables.contains(prod3.getLadoIzquierdo()));
         assertTrue(nulleables.contains(prod5.getLadoIzquierdo()));
+    }
+
+    @Test
+    public void todosLosSimbolosTerminalesSonGeneradores() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("S->a"));
+        g.agregarProduccion(new Produccion("A -> e"));
+        Collection<String> generadores = g.getSimbolosGeneradores();
+        assertEquals(4, generadores.size());
+        assertTrue(generadores.contains("a"));
+        assertTrue(generadores.contains("e"));
+    }
+    
+    @Test
+    public void unaVariableEsGeneradoraSiDerivaSoloSimbolosGeneradores() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("A -> Ba"));
+        Collection<String> generadores = g.getSimbolosGeneradores();
+        assertEquals(1, generadores.size());
+        assertTrue(generadores.contains("a"));
+        assertFalse(generadores.contains("A"));
+        assertFalse(generadores.contains("B"));
+    }
+
+    @Test
+    public void unaVariableEsGeneradoraSiDerivaAOtraQueFueIdentificadaComoGeneradora() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("S->AB"));
+        g.agregarProduccion(new Produccion("S->C"));
+        g.agregarProduccion(new Produccion("A->aA"));
+        g.agregarProduccion(new Produccion("A->a"));
+        g.agregarProduccion(new Produccion("B->bB"));
+        g.agregarProduccion(new Produccion("C->c"));
+        Collection<String> generadores = g.getSimbolosGeneradores();
+        assertEquals(6, generadores.size());
+        // S se identifica como generador en el caso inductivo.
+        assertTrue(generadores.contains("S"));
     }
 }
