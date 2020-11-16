@@ -20,7 +20,7 @@ public class Gramatica {
     private void inicializarConjuntos() {
         this.producciones = new HashSet<Produccion>();
         this.terminales   = new HashSet<>();
-        this.variables    = new HashSet<>();        
+        this.variables    = new HashSet<>();
     }
     
     public void agregarProduccion(Produccion prod) {

@@ -196,4 +196,27 @@ public class LimpiadorDeGramaticasTest {
         g1.agregarProduccion(new Produccion("S->a"));
         assertEquals(g1, ldg.eliminarSimbolosNoGeneradores(g));
     }
+
+    @Test
+    public void seEliminanLasProduccionesCuyoLadoIzquierdoEsInalcanzable() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("S->a"));
+        g.agregarProduccion(new Produccion("A->a")); // Lado izq inalcanzable
+        Gramatica g1 = new Gramatica();
+        g1.agregarProduccion(new Produccion("S->a"));
+        assertEquals(g1, ldg.eliminarSimbolosInalcanzables(g));
+    }
+
+    @Test
+    public void seEliminanLasProduccionesCuyoLadoDerechoTienenAlMenosUnSimboloInalcanzable() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("S->aA"));
+        g.agregarProduccion(new Produccion("A->a"));
+        g.agregarProduccion(new Produccion("C->B")); // Lado der inalcanzable
+        Gramatica g1 = new Gramatica();
+        g1.agregarProduccion(new Produccion("S->aA"));
+        g1.agregarProduccion(new Produccion("A->a"));
+        ldg.eliminarSimbolosInalcanzables(g).getProducciones().stream().forEach(System.out::println);
+        assertEquals(g1, ldg.eliminarSimbolosInalcanzables(g));
+    }
 }

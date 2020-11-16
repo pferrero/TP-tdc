@@ -150,4 +150,13 @@ public class LimpiadorDeGramaticas {
           .forEach(g1::agregarProduccion);
         return g1;
     }
+
+    public Gramatica eliminarSimbolosInalcanzables(Gramatica g) {
+        Gramatica g1 = new Gramatica();
+        Collection<String> simbolosAlcanzables = g.getSimbolosAlcanzables();
+        g.getProducciones().stream()
+        .filter(p -> simbolosAlcanzables.contains(p.getLadoIzquierdo()))
+        .forEach(g1::agregarProduccion);
+        return g1;
+    }
 }
