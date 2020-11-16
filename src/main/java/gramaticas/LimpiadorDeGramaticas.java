@@ -132,4 +132,22 @@ public class LimpiadorDeGramaticas {
         }
         return ret;
     }
+
+    public Gramatica eliminarSimbolosNoGeneradores(Gramatica g) {
+        Gramatica g1 = new Gramatica();
+        Collection<String> simbolosGeneradores = g.getSimbolosGeneradores();
+        g.getProducciones()
+          .stream()
+          .filter(p -> simbolosGeneradores.contains(p.getLadoIzquierdo()))
+          .filter(p -> {
+              boolean esGenerador = true;
+              String ladoDerecho = p.getLadoDerecho();
+              for (char c : ladoDerecho.toCharArray()) {
+                  esGenerador = esGenerador && simbolosGeneradores.contains(String.valueOf(c));
+              }
+              return esGenerador;
+          })
+          .forEach(g1::agregarProduccion);
+        return g1;
+    }
 }

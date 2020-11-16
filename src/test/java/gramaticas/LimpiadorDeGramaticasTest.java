@@ -174,4 +174,26 @@ public class LimpiadorDeGramaticasTest {
         g1.agregarProduccion(new Produccion("A->BD"));
         assertEquals(g1, ldg.eliminarProduccionesUnitarias(g));
     }
+
+    @Test
+    public void seEliminanSoloLasProduccionesConSimbolosNoGeneradores() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("S->A"));
+        g.agregarProduccion(new Produccion("S->a"));
+        Gramatica g1 = new Gramatica();
+        g1.agregarProduccion(new Produccion("S->a"));
+        assertEquals(g1, ldg.eliminarSimbolosNoGeneradores(g));
+    }
+
+    @Test
+    public void seEliminanProduccionesConAlMenosUnSimboloNoGenerador() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("S->A"));
+        g.agregarProduccion(new Produccion("S->a"));
+        // b es generador pero A no => se elimina toda la producción
+        g.agregarProduccion(new Produccion("S -> AbA"));
+        Gramatica g1 = new Gramatica();
+        g1.agregarProduccion(new Produccion("S->a"));
+        assertEquals(g1, ldg.eliminarSimbolosNoGeneradores(g));
+    }
 }
