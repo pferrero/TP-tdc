@@ -111,6 +111,32 @@ public class Gramatica {
         return ret;
     }
 
+    public Collection<String> getSimbolosAlcanzables() {
+        Collection<String> alcanzables = new HashSet<>();
+        // Caso base: se puede alcanzar el símbolo inicial S
+        alcanzables.add("S");
+        // Caso inductivo: Si A es alcanzable y existe A->alfa, entonces
+        // podemos alcanzar todos los símbolos de alfa.
+        boolean continuar = true;
+        Collection<String> alcanzablesNuevos = new HashSet<>();
+        while (continuar) {
+            alcanzables.forEach(var -> {
+                if (Produccion.esVariable(var)) {
+                    getProduccionesDeVariable(var)
+                      .stream()
+                      .map(p -> p.getLadoDerecho())
+                      .forEach(ld -> {
+                          for (char c : ld.toCharArray())
+                              alcanzablesNuevos.add(String.valueOf(c));
+                      });
+                }
+            });
+            continuar = alcanzables.addAll(alcanzablesNuevos);
+            alcanzablesNuevos.clear();
+        }
+        return alcanzables;
+    }
+
     public Collection<String> getVariables(){
         return new HashSet<String>(this.variables);
     }
@@ -131,7 +157,7 @@ public class Gramatica {
                 .stream().filter(p -> p.getLadoIzquierdo().equals(var))
                 .collect(Collectors.toSet());
     }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;

@@ -135,4 +135,37 @@ public class GramaticaTest {
         // S se identifica como generador en el caso inductivo.
         assertTrue(generadores.contains("S"));
     }
+
+    @Test
+    public void sePuedeAlcanzarElSimboloInicialSiempreAunqueNoHayaProducciones() {
+        Gramatica g = new Gramatica();
+        Collection<String> simbolosAlcanzables = g.getSimbolosAlcanzables();
+        assertEquals(1, simbolosAlcanzables.size());
+        assertTrue(simbolosAlcanzables.contains("S"));
+    }
+
+    @Test
+    public void sePuedeAlcanzarLosSimbolosDeLasProduccionesDelSimboloInicial() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("S->abc"));
+        g.agregarProduccion(new Produccion("S->Aa"));
+        Collection<String> simbolosAlcanzables = g.getSimbolosAlcanzables();
+        assertEquals(5, simbolosAlcanzables.size());
+        assertTrue(simbolosAlcanzables.contains("A"));
+        assertTrue(simbolosAlcanzables.contains("a"));
+        assertTrue(simbolosAlcanzables.contains("b"));
+        assertTrue(simbolosAlcanzables.contains("c"));
+    }
+
+    @Test
+    public void sePuedenAlcanzarLosSimbolosAlcanzablesDescubiertosAPartirDeS() {
+        Gramatica g = new Gramatica();
+        g.agregarProduccion(new Produccion("S->A"));
+        g.agregarProduccion(new Produccion("A->Ba"));
+        Collection<String> simbolosAlcanzables = g.getSimbolosAlcanzables();
+        assertEquals(4, simbolosAlcanzables.size());
+        assertTrue(simbolosAlcanzables.contains("A"));
+        assertTrue(simbolosAlcanzables.contains("B"));
+        assertTrue(simbolosAlcanzables.contains("a"));
+    }
 }
