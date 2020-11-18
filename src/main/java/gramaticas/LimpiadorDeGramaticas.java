@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class LimpiadorDeGramaticas {
 
@@ -158,5 +159,14 @@ public class LimpiadorDeGramaticas {
         .filter(p -> simbolosAlcanzables.contains(p.getLadoIzquierdo()))
         .forEach(g1::agregarProduccion);
         return g1;
+    }
+
+    public Gramatica limpiarGramatica(Gramatica g) {
+        return Stream.of(g)
+            .map(this::eliminarProduccionesEpsilon)
+            .map(this::eliminarProduccionesUnitarias)
+            .map(this::eliminarSimbolosNoGeneradores)
+            .map(this::eliminarSimbolosInalcanzables)
+            .findFirst().get();
     }
 }
