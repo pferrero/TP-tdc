@@ -144,7 +144,11 @@ public class Gramatica {
     public Collection<Produccion> getProducciones() {
         return new HashSet<Produccion>(this.producciones);
     }
-    
+
+    public Collection<String> getTerminales(){
+        return new HashSet<>(this.terminales);
+    }
+
     public Collection<Produccion> getProduccionesUnitarias() {
         return this.producciones
                 .stream()
