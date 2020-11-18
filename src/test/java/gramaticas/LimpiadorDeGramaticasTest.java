@@ -8,28 +8,28 @@ import org.junit.Test;
 public class LimpiadorDeGramaticasTest {
 
     private LimpiadorDeGramaticas ldg;
-    
+
     @Before
     public void setUp() {
         ldg = new LimpiadorDeGramaticas();
     }
-    
+
     @Test
     public void whenGramaticaNoTieneProduccionesExpectMismaGramatica() {
-        Gramatica gram = new Gramatica();        
+        Gramatica gram = new Gramatica();
         assertEquals(gram, ldg.eliminarProduccionesEpsilon(gram));
     }
-    
+
     @Test
     public void whenGramaticaNoTieneProduccionesEpsilonExpectMismaGramatica() {
-        Gramatica gram = new Gramatica();        
+        Gramatica gram = new Gramatica();
         Produccion prod1 = new Produccion("S -> A");
         Produccion prod2 = new Produccion("A -> a");
         gram.agregarProduccion(prod1);
-        gram.agregarProduccion(prod2);        
+        gram.agregarProduccion(prod2);
         assertEquals(gram, ldg.eliminarProduccionesEpsilon(gram));
     }
-    
+
     @Test
     public void whenGramaticaTieneSoloUnaProduccionEpsilonExpectGramaticaVacia() {
         Gramatica gram = new Gramatica();
@@ -37,7 +37,7 @@ public class LimpiadorDeGramaticasTest {
         gram.agregarProduccion(prod);
         assertEquals(new Gramatica(), ldg.eliminarProduccionesEpsilon(gram));
     }
-    
+
     @Test
     public void whenHayUnaProduccionConVariablesNulleablesThenIncluir2AlamVersionesDeEsaProduccion() {        
         /*
@@ -59,7 +59,26 @@ public class LimpiadorDeGramaticasTest {
         g1.agregarProduccion(prod2);
         assertEquals(g1, ldg.eliminarProduccionesEpsilon(gram));
     }
-    
+
+    @Test
+    public void whenHayUnaProduccionConAlgunasVariablesNulleablesYOtrasNoExpect2MversionesSoloDeLasNulleables() {
+        Gramatica gram = new Gramatica();
+        Produccion prod1 = new Produccion("S -> aAB");
+        Produccion prod2 = new Produccion("A -> a");
+        Produccion prod3 = new Produccion("A -> " + Produccion.EPSILON);
+        Produccion prod4 = new Produccion("B -> b");
+        gram.agregarProduccion(prod1);
+        gram.agregarProduccion(prod2);
+        gram.agregarProduccion(prod3);
+        gram.agregarProduccion(prod4);
+        Gramatica g1 = new Gramatica();
+        g1.agregarProduccion(prod1);
+        g1.agregarProduccion(new Produccion("S->aB"));
+        g1.agregarProduccion(prod2);
+        g1.agregarProduccion(prod4);
+        assertEquals(g1, ldg.eliminarProduccionesEpsilon(gram));
+    }
+
     @Test
     public void whenHayMasDeUnaProdNulleableExpect2mVersiones() {
         Gramatica gram = new Gramatica();
@@ -79,10 +98,10 @@ public class LimpiadorDeGramaticasTest {
         g1.agregarProduccion(new Produccion("S -> abBc"));
         g1.agregarProduccion(new Produccion("S -> abc"));
         g1.agregarProduccion(prod2);
-        g1.agregarProduccion(prod4);        
+        g1.agregarProduccion(prod4);
         assertEquals(g1, ldg.eliminarProduccionesEpsilon(gram));
     }
-    
+
     @Test
     public void noSeIncluyeElCasoDondeTodasLasVarDelLadoDerechoSonNulleables() {
         Gramatica gram = new Gramatica();
@@ -123,7 +142,7 @@ public class LimpiadorDeGramaticasTest {
         Gramatica g = new Gramatica();
         assertEquals(new Gramatica(), ldg.eliminarProduccionesUnitarias(g));
     }
-    
+
     @Test
     public void whenLaGramaticaNoTieneProduccionesUnitariasExpectMismaGramatica() {
         Gramatica g = new Gramatica();
@@ -131,7 +150,7 @@ public class LimpiadorDeGramaticasTest {
         g.agregarProduccion(new Produccion("A -> a"));
         assertEquals(g, ldg.eliminarProduccionesUnitarias(g));
     }
-    
+
     @Test
     public void whenLaGramaticaTieneUnaProduccionUnitariaExpectNuevaGramatica() {
         Gramatica g = new Gramatica();
@@ -144,7 +163,7 @@ public class LimpiadorDeGramaticasTest {
         g1.agregarProduccion(new Produccion("S->a"));
         assertEquals(g1, ldg.eliminarProduccionesUnitarias(g));
     }
-    
+
     @Test
     public void whenLaGramaticaTieneUnaCadenaDeProduccionesUnitariasExpectNuevaGramatica() {
         Gramatica g = new Gramatica();
@@ -216,7 +235,6 @@ public class LimpiadorDeGramaticasTest {
         Gramatica g1 = new Gramatica();
         g1.agregarProduccion(new Produccion("S->aA"));
         g1.agregarProduccion(new Produccion("A->a"));
-        ldg.eliminarSimbolosInalcanzables(g).getProducciones().stream().forEach(System.out::println);
         assertEquals(g1, ldg.eliminarSimbolosInalcanzables(g));
     }
 }

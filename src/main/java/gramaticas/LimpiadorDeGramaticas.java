@@ -38,6 +38,8 @@ public class LimpiadorDeGramaticas {
             for (char simbolo : prod.getLadoDerecho().toCharArray()) {
                 if (Produccion.esTerminal(String.valueOf(simbolo)))
                     ladoDerecho.append(simbolo);
+                else if (!nulleables.contains(String.valueOf(simbolo)))
+                    ladoDerecho.append(simbolo);
                 else if (subconjunto.indexOf(simbolo) != -1)
                     ladoDerecho.append(simbolo);
             }
@@ -46,7 +48,7 @@ public class LimpiadorDeGramaticas {
         }
         return ret;
     }
-    
+
     /*
      * retorna un string con las variables nulleables del string s, siendo
      * nulleables las de la colección nulleables.
@@ -58,7 +60,7 @@ public class LimpiadorDeGramaticas {
                 sb.append(String.valueOf(c));
         return sb.toString();
     }
-    
+
     /*
      * retorna un arreglo con todos los subconjuntos posibles que se obtienen
      * tomando o no cada símbolo del string símbolos.
@@ -67,10 +69,10 @@ public class LimpiadorDeGramaticas {
      * return = [A,B,C,AB,AC,BC,ABC,'']
      */
     private String[] getSubconjuntosDeString(String simbolos) {
-        String[] ret = new String[1<<simbolos.length()];        
+        String[] ret = new String[1<<simbolos.length()];
         for (int i = 0; i < (1<<simbolos.length()); i++) {
             StringBuilder sb = new StringBuilder();
-            for (int j = 0; j < simbolos.length(); j++)   
+            for (int j = 0; j < simbolos.length(); j++)
                 if ((i & (1 << j)) > 0)
                     sb.append(simbolos.charAt(j));
             ret[i] = sb.toString();
