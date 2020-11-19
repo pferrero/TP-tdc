@@ -6,7 +6,11 @@ public class Produccion {
     
     private String ladoIzquierdo;
     private String ladoDerecho;
-    
+
+    public Produccion(String izq, String der) {
+        this(izq + "->" + der);
+    }
+
     public Produccion(String produccion) {
         if (!produccion.contains("->")) {
             errorDeFormato(produccion);
@@ -67,7 +71,10 @@ public class Produccion {
     public static boolean esVariable(String a) {
         return a.matches("[A-Z]");
     }
-    
+
+    public boolean esUnitaria() {
+        return Produccion.esVariable(getLadoDerecho());
+    }
     @Override
     public int hashCode() {
         final int prime = 31;
