@@ -1,17 +1,23 @@
 package gramaticas;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.Stack;
 import java.util.stream.Stream;
+
+import com.google.common.base.CharMatcher;
 
 public class LimpiadorDeGramaticas {
 
     public Gramatica eliminarProduccionesEpsilon(Gramatica g) {
-        Gramatica g1 = new Gramatica();        
+        Gramatica g1 = new Gramatica();
         Set<String> nulleables = Collections.unmodifiableSet(g.variablesNulleables());
         g.getProducciones()
             .stream()
@@ -32,19 +38,46 @@ public class LimpiadorDeGramaticas {
             ret.add(prod);
             return ret;
         }
-        String subconjuntos[] = getSubconjuntosDeString(simbolosNulleables);
-        for (String subconjunto : subconjuntos) {
-            StringBuilder ladoDerecho = new StringBuilder();
-            for (char simbolo : prod.getLadoDerecho().toCharArray()) {
-                if (Produccion.esTerminal(String.valueOf(simbolo)))
-                    ladoDerecho.append(simbolo);
-                else if (!nulleables.contains(String.valueOf(simbolo)))
-                    ladoDerecho.append(simbolo);
-                else if (subconjunto.indexOf(simbolo) != -1)
-                    ladoDerecho.append(simbolo);
+        // Reemplazo las variables nulleables por si hay repetidas
+        Map<Character, String> repetidos = new HashMap<>();
+        Stack<Character> variablesDisponibles = new Stack<>();
+        Arrays.asList('A','B','C','D','E','F','G','H','I','J','K','L','M','N',
+                'Ñ','O','P','Q','R','S','T','U','V','W','X','Y','Z')
+                .stream()
+                .filter(var -> !nulleables.contains(String.valueOf(var)))
+                .forEach(variablesDisponibles::push);
+        String ladoDerecho = prod.getLadoDerecho();
+        for (char nulleable : simbolosNulleables.toCharArray()) {
+             CharMatcher cm = CharMatcher.is(nulleable);
+            while (cm.matchesAnyOf(ladoDerecho)) {
+                char var = variablesDisponibles.pop();
+                ladoDerecho = ladoDerecho.replaceFirst(String.valueOf(nulleable), String.valueOf(var));
+                repetidos.put(var, String.valueOf(nulleable));
             }
-            if (!ladoDerecho.toString().isEmpty())
-                ret.add(new Produccion(prod.getLadoIzquierdo(), ladoDerecho.toString()));
+        }
+
+        // Se crean las 2^m versiones
+        String subconjuntos[] = getSubconjuntosDeString(ladoDerecho);
+        for (String subconjunto : subconjuntos) {
+            StringBuilder nuevoLadoDerecho = new StringBuilder();
+            for (char simbolo : ladoDerecho.toCharArray()) {
+                if (Produccion.esTerminal(String.valueOf(simbolo)))
+                    nuevoLadoDerecho.append(simbolo);
+                else if (!repetidos.containsKey(simbolo)) // es var pero no nulleable
+                    nuevoLadoDerecho.append(simbolo);
+                else if (subconjunto.indexOf(simbolo) != -1)
+                    nuevoLadoDerecho.append(simbolo);
+            }
+            if (!nuevoLadoDerecho.toString().isEmpty()) {
+                // Se vuelven a reemplazar las variables nulleables por las originales
+                // antes de agregar la produccion a ret.
+                String aux = nuevoLadoDerecho.toString();
+                for (char c : ladoDerecho.toCharArray()) {
+                    if (repetidos.containsKey(c))
+                        aux = CharMatcher.is(c).replaceFrom(aux, repetidos.get(c));
+                }
+                ret.add(new Produccion(prod.getLadoIzquierdo(), aux));
+            }
         }
         return ret;
     }
@@ -76,7 +109,7 @@ public class LimpiadorDeGramaticas {
                 if ((i & (1 << j)) > 0)
                     sb.append(simbolos.charAt(j));
             ret[i] = sb.toString();
-        }        
+        }
         return ret;
     }
 
@@ -94,6 +127,7 @@ public class LimpiadorDeGramaticas {
             return varDerecha;
         }
     }
+
     /*
      * Recibe una gramática g y devuelve una gramática g1 sin producciones
      * unitarias.
