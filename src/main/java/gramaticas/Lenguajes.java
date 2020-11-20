@@ -1,17 +1,18 @@
 package gramaticas;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
 
 public class Lenguajes {
 
     public boolean CYK(Gramatica g, String w) {
-        Map<Indices, List<Character>> triangulo = new HashMap<Indices, List<Character>>(w.length() * w.length());
+        Map<Indices, Set<Character>> triangulo = new HashMap<Indices, Set<Character>>(w.length() * w.length());
         Collection<Produccion> producciones = ImmutableSet.copyOf(g.getProducciones());
 
         // Lleno el triángulo con null
@@ -21,7 +22,7 @@ public class Lenguajes {
 
         // Caso base: X_{ii} = {A|A->a_i es una producción}
         for(int i = 0; i < w.length(); i++) {
-            List<Character> X_ii = new ArrayList<>();
+            Set<Character> X_ii = new HashSet<>();
             Character a_i = w.charAt(i);
             producciones
               .stream()
@@ -32,19 +33,33 @@ public class Lenguajes {
             triangulo.put(Indices.get(i, i), X_ii);
         }
 
-        // Caso inductivo:
+        // Caso inductivo: X_{ij} = {A|existe A->BC y un entero k con i <= k < j
+        // tal que B está en X_{ik} y C está en X_{(k+1)k}}
         int n = 1;
         while (n < w.length()) {
             int i = 0;
             int j = i + n;
             while (j < w.length()) {
                 // Calculo una fila
-                System.out.println("Fila: " + Indices.get(i, j));
+                for (int k = i; k < j; k++) {
+                    // Calculo un X_{ij}
+                    Set<Character> X_ij = new HashSet<>();
+                    for(Character B : triangulo.get(Indices.get(i, k))) {
+                        for(Character C : triangulo.get(Indices.get(k+1, j))) {
+                            String ladoDerecho = Joiner.on("").join(B, C);
+                            producciones.stream()
+                                .filter(p -> p.getLadoDerecho().equals(ladoDerecho))
+                                .map(p -> p.getLadoIzquierdo())
+                                .map(var -> var.charAt(0))
+                                .forEach(X_ij::add);
+                        }
+                    }
+                    triangulo.put(Indices.get(i, j), X_ij);
+                }
                 i++;
                 j++;
             }
             n++;
-            System.out.println("----");
         }
 
         // verificamos que S esté en X_{1n}
