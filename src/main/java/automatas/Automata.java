@@ -135,7 +135,7 @@ public class Automata {
         String res = new String();
         res += "-------"+this.tipo+"---------\r\n";
         res += "Alfabeto " + this.alfabeto+"\r\n";
-        res += "Estado inicial " + this.inicial +"\r\n";
+        res += "Estado inicial " + this.inicial.toString() +"\r\n";
         res += "Conjutos de estados de aceptacion " + this.finales +"\r\n";
         res += "Conjunto de Estados " + this.estados.toString()+"\r\n";
         res += "Conjunto de transiciones ";
@@ -144,9 +144,9 @@ public class Automata {
              res += est.getTransiciones()+"-";
         }
         res += "\r\n";
-        res += "Lenguaje r: " +this.lenguajeR + "\r\n";
-        res += "Cadena w ingresada: "+this.resultadoRegex[1] + "\r\n";
-        res += "Resultado: "+ this.resultadoRegex[2] + "\r\n";
+//        res += "Lenguaje r: " +this.lenguajeR + "\r\n";
+//        res += "Cadena w ingresada: "+this.resultadoRegex[1] + "\r\n";
+//        res += "Resultado: "+ this.resultadoRegex[2] + "\r\n";
         
         return res;
     }
