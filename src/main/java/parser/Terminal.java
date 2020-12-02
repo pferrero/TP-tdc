@@ -4,7 +4,7 @@ public class Terminal extends Caracter{
 
     private Character caracter;
 
-    public Terminal(Character c) {
-        
+    public Terminal(String simbolo) {
+        super(simbolo);
     }
 }

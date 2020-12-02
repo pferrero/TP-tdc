@@ -3,12 +3,13 @@ package parser;
 public class Variable extends Caracter{
 
     private Integer numero;
+    public static final String EXP_VARIABLE = "(\\X_{\\d+})";
     
     public Variable(String variable) {
+    	super(variable);
         // expresion regular que parsee: X_{num}
     }
 
-    
     @Override
     public int hashCode() {
         final int prime = 31;
