@@ -69,6 +69,21 @@ public class ParserLR0 {
         }
         return clausura;
     }
+    
+    public HashSet<Item> IrA(HashSet<Item> items, Caracter caracter)
+    {
+            HashSet<Item> conjunto = new HashSet<Item>();
+
+            for(Item item : items)
+            {
+                if (item.GetCaracterLadoDerecho() == caracter)
+                {
+                    conjunto.add(new Item(item.getProduccion(), item.getPosicion() + 1));
+                }
+            }
+
+            return clausuraItem(conjunto);
+    }
 	
 	//clausuraItem(Item)
 	//IrA(HashSet<Item>, Caracter)
