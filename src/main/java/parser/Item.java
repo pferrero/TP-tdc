@@ -1,7 +1,5 @@
 package parser;
 
-import gramaticas.Produccion;
-
 public class Item {
 	
 	private Produccion produccion;
@@ -15,33 +13,33 @@ public class Item {
         if (pos < 0) 
         	this.posicion= 0;
 
-        this.posicion = pos > produccion.getLadoDerecho().length() ? produccion.getLadoDerecho().length() : pos;
+        this.posicion = pos > produccion.getLadoDerecho().size() ? produccion.getLadoDerecho().size() : pos;
 	}
 	
-	   public Character GetCaracterLadoDerecho(Produccion prod)
+	   public Caracter GetCaracterLadoDerecho(Produccion prod)
        {
-           if (this.posicion >= this.produccion.getLadoDerecho().length())
+           if (this.posicion >= this.produccion.getLadoDerecho().size())
         	   return null;
 
-           return this.produccion.getLadoDerecho().charAt(this.posicion);
+           return this.produccion.getLadoDerecho().get(posicion);
        }
 	   
-	   public Character GetCaracterLadoIzquierdo(Produccion prod)
+	   public Caracter GetCaracterLadoIzquierdo(Produccion prod)
        {
-           if (this.posicion >= this.produccion.getLadoDerecho().length() + 1 || this.posicion == 0)
+           if (this.posicion >= this.produccion.getLadoDerecho().size() + 1 || this.posicion == 0)
         	   return null;
 
-           return this.produccion.getLadoDerecho().charAt(this.posicion - 1);
+           return this.produccion.getLadoDerecho().get(this.posicion - 1);
        }
 	   
 	   public boolean IsEndPosition()
        {
-           return this.posicion == this.produccion.getLadoDerecho().length();
+           return this.posicion == this.produccion.getLadoDerecho().size();
        }
 	
-	   public Character GetLastSymbol()
+	   public Caracter GetLastSymbol()
        {
-           return this.produccion.getLadoDerecho().charAt(this.produccion.getLadoDerecho().length()-1);
+           return this.produccion.getLadoDerecho().get(this.produccion.getLadoDerecho().size()-1);
        }
 	
 
