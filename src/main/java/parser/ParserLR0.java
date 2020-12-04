@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import Utilities.ReadFile;
 import Utilities.Validator;
@@ -24,9 +25,11 @@ public class ParserLR0 {
 	{   if (this.items == null)
     {
         this.items = new HashSet<Item>();
-
-        this.items.add(new Item(this.gramatica.getProducciones().stream().skip(0).findFirst().get(), 0));
-        this.items.add(new Item(this.gramatica.getProducciones().stream().skip(0).findFirst().get(), 1));
+        
+        gramaticas.Produccion firstProd = this.gramatica.getProducciones().stream().skip(0).findFirst().get();
+        
+        this.items.add(new Item(firstProd, 0));
+        this.items.add(new Item(firstProd, 1));
 
         Iterator<gramaticas.Produccion> producciones = this.gramatica.getProducciones().iterator();
         while(producciones.hasNext())
@@ -40,6 +43,32 @@ public class ParserLR0 {
     }
     return this.items;
 	}
+	
+    private HashSet<Item> clausuraItem(HashSet<Item> items)
+    {
+        HashSet<Item> clausura = new HashSet<Item>(); 
+        //preparo el conjunto de items output
+        //por cada item 
+
+        for (Item item : items)
+        {
+            clausura.add(item);
+            for(Item itemClausura : clausura)
+            {
+                Caracter ctr = itemClausura.GetCaracterLadoDerecho();
+
+                if (ctr != null)
+                {
+                    HashSet<Item> temp = (HashSet<Item>) this.getItems()
+                    		.stream()
+                    		.filter(i -> i.getProduccion().getLadoIzquierdo().getSimbolo().equals(ctr.getSimbolo()) && i.getPosicion() == 0)
+                    		.collect(Collectors.toSet());
+                    clausura.addAll(temp);
+                }
+            }
+        }
+        return clausura;
+    }
 	
 	//clausuraItem(Item)
 	//IrA(HashSet<Item>, Caracter)
