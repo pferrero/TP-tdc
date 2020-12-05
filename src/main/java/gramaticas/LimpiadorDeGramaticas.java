@@ -42,7 +42,7 @@ public class LimpiadorDeGramaticas {
         Map<Character, String> repetidos = new HashMap<>();
         Stack<Character> variablesDisponibles = new Stack<>();
         Arrays.asList('A','B','C','D','E','F','G','H','I','J','K','L','M','N',
-                'Ã‘','O','P','Q','R','S','T','U','V','W','X','Y','Z')
+                'Ñ','O','P','Q','R','S','T','U','V','W','X','Y','Z')
                 .stream()
                 .filter(var -> !nulleables.contains(String.valueOf(var)))
                 .forEach(variablesDisponibles::push);

@@ -29,6 +29,17 @@ public class Produccion {
     	return this.ladoDerecho;
     }
     
+    public static boolean esTerminal(String a) {
+        return a.matches("[a-z]");
+    }
+    
+    public static boolean esVariable(String a) {
+        return a.matches("(\\X_{\\d+})");
+    }
+
+    public boolean esUnitaria() {
+    	return this.ladoDerecho.size() == 1 && esVariable(this.ladoDerecho.get(0).getSimbolo());
+    }
     @Override
     public String toString() {
     	StringBuilder ladoDerechoString = new StringBuilder();

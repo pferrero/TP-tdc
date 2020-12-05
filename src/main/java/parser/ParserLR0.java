@@ -28,8 +28,8 @@ public class ParserLR0 {
         
         gramaticas.Produccion firstProd = this.gramatica.getProducciones().stream().skip(0).findFirst().get();
         
-        this.items.add(new Item(firstProd, 0));
-        this.items.add(new Item(firstProd, 1));
+//        this.items.add(new Item(firstProd, 0));//S' -> .S
+//        this.items.add(new Item(firstProd, 1)); //S' -> S.
 
         Iterator<gramaticas.Produccion> producciones = this.gramatica.getProducciones().iterator();
         while(producciones.hasNext())
@@ -37,11 +37,11 @@ public class ParserLR0 {
         	gramaticas.Produccion prod = producciones.next();
             for (int i = 0; i < prod.getLadoDerecho().length(); i++)
             {
-                this.items.add(new Item(prod, i));
+//                this.items.add(new Item(prod, i));
             }
         }
     }
-    return this.items;
+    	return this.items;
 	}
 	
     private HashSet<Item> clausuraItem(HashSet<Item> items)
@@ -55,7 +55,7 @@ public class ParserLR0 {
             clausura.add(item);
             for(Item itemClausura : clausura)
             {
-                Caracter ctr = itemClausura.GetCaracterLadoDerecho();
+                Caracter ctr = itemClausura.GetCaracterLadoDerecho();//E -> T. E -> .T
 
                 if (ctr != null)
                 {
@@ -76,12 +76,11 @@ public class ParserLR0 {
 
             for(Item item : items)
             {
-                if (item.GetCaracterLadoDerecho() == caracter)
+                if (item.GetCaracterLadoDerecho().equals(caracter))
                 {
                     conjunto.add(new Item(item.getProduccion(), item.getPosicion() + 1));
                 }
             }
-
             return clausuraItem(conjunto);
     }
 	
