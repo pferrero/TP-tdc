@@ -96,6 +96,58 @@ public class ParserLR0 {
 		}
 	}
 	
+	/// <summary>
+    /// Crea la coleccion elementos o estados LR(0), junto con sus acciones: (shift, goto, acept, reduce)
+    /// </summary>
+    public HashSet<TablaSimbolo> LR()
+    {
+        HashSet<TablaSimbolo> T = new HashSet<TablaSimbolo>();
+
+        Item inicial = this.getItems().stream().findFirst().get();
+        
+        HashSet<Item> clausura = new HashSet<Item>();
+        clausura.add(inicial);
+        
+        int stateIndex = 1;
+
+        T.add(new TablaSimbolo(clausura, stateIndex++));
+
+        for (int i = 0; i < T.size(); i++)
+        {
+            TablaSimbolo I = T.stream().findFirst().get();
+
+            for(Item item : I.getItems())
+            {
+                Caracter X = item.GetCaracterLadoDerecho();
+                //si es vacio
+				if (X != null && !X.getSimbolo().equals(""))
+                {//si es el ultimo caracter
+                    if (X != item.getProduccion().getLadoDerecho().get(item.getProduccion().getLadoDerecho().size()-1))
+                    {
+                        TablaSimbolo estado = new TablaSimbolo(IrA(I.getItems(), X), stateIndex);
+
+                        if (!T.add(estado))
+                        {
+//                            estado = T.Single(ee => ee == estado); //ver que se hace aca
+                        }
+                        else stateIndex++;
+                        
+                        if(Produccion.esVariable(X.getSimbolo()) && !I.getAcciones().containsKey(X))
+                        	I.getAcciones().put(X, TablaAccion.IrA(estado));
+                        else if(Produccion.esTerminal(X.getSimbolo()) && !I.getAcciones().containsKey(X))
+                        	I.getAcciones().put(X, TablaAccion.Shift(estado));
+                    }
+                    else 
+                    { 
+                    	I.getAcciones().put(X, new TablaAccion(TipoTablaAccion.Aceptar, null, null)); 
+                    }
+                }
+
+            }
+        }
+        return T;
+    }
+	
 	//accion()
 	//reduce()
 	//shift()
