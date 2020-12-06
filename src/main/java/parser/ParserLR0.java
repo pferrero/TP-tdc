@@ -81,9 +81,21 @@ public class ParserLR0 {
             }
             return clausuraItem(conjunto);
     }
+    
+	public void generarGramatica(String filePath) 
+	{
+		ReadFile reader = new ReadFile();
+		Validator validator = new Validator();
+		reader.assingFile(filePath);
+		for(int i = 0; i < reader.linesNumber(); i++) 
+		{
+			String linea = reader.getLine(i);
+			if(!validator.isValid(linea, Produccion.EXP_PRODUCCION))
+				throw new InputMismatchException("Error al leer el archivo. Produccion invalida");
+			this.gramatica.agregarProduccion(new Produccion(linea));
+		}
+	}
 	
-	//clausuraItem(Item)
-	//IrA(HashSet<Item>, Caracter)
 	//accion()
 	//reduce()
 	//shift()
@@ -111,18 +123,6 @@ public class ParserLR0 {
 		System.out.println(lista);
 	}
 	
-	public void generarGramatica(String filePath) 
-	{
-		ReadFile reader = new ReadFile();
-		Validator validator = new Validator();
-		reader.assingFile(filePath);
-		for(int i = 0; i < reader.linesNumber(); i++) 
-		{
-			String linea = reader.getLine(i);
-			if(!validator.isValid(linea, Produccion.EXP_PRODUCCION))
-				throw new InputMismatchException("Error al leer el archivo. Produccion invalida");
-			this.gramatica.agregarProduccion(new Produccion(linea));
-		}
-	}
+
 	
 }
