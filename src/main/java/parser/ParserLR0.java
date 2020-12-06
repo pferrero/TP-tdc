@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import Utilities.ReadFile;
 import Utilities.Validator;
-import gramaticas.Gramatica;
 
 public class ParserLR0 {
 	
@@ -26,18 +24,18 @@ public class ParserLR0 {
     {
         this.items = new HashSet<Item>();
         
-        gramaticas.Produccion firstProd = this.gramatica.getProducciones().stream().skip(0).findFirst().get();
+        Produccion firstProd = this.gramatica.getProd_inicial();
         
-//        this.items.add(new Item(firstProd, 0));//S' -> .S
-//        this.items.add(new Item(firstProd, 1)); //S' -> S.
-
-        Iterator<gramaticas.Produccion> producciones = this.gramatica.getProducciones().iterator();
+        this.items.add(new Item(firstProd, 0));//S' -> .S
+        this.items.add(new Item(firstProd, 1)); //S' -> S.
+        
+        Iterator<Produccion> producciones = this.gramatica.getProducciones().iterator();
         while(producciones.hasNext())
         {
-        	gramaticas.Produccion prod = producciones.next();
-            for (int i = 0; i < prod.getLadoDerecho().length(); i++)
+        	Produccion prod = producciones.next();
+            for (int i = 0; i < prod.getLadoDerecho().size(); i++)
             {
-//                this.items.add(new Item(prod, i));
+                this.items.add(new Item(prod, i));
             }
         }
     }
@@ -110,9 +108,7 @@ public class ParserLR0 {
 		lista.add("X8");
 		lista.add("X7");
 		
-	System.out.println(lista);
-		
-		
+		System.out.println(lista);
 	}
 	
 	public void generarGramatica(String filePath) 
@@ -125,7 +121,7 @@ public class ParserLR0 {
 			String linea = reader.getLine(i);
 			if(!validator.isValid(linea, Produccion.EXP_PRODUCCION))
 				throw new InputMismatchException("Error al leer el archivo. Produccion invalida");
-			this.gramatica.agregarProduccion(new gramaticas.Produccion(linea));
+			this.gramatica.agregarProduccion(new Produccion(linea));
 		}
 	}
 	
