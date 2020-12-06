@@ -53,4 +53,31 @@ public class Item {
 		return this.produccion.getLadoDerecho().get(this.produccion.getLadoDerecho().size()-1);
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + posicion;
+		result = prime * result + ((produccion == null) ? 0 : produccion.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Item other = (Item) obj;
+		if (posicion != other.posicion)
+			return false;
+		if (produccion == null) {
+			if (other.produccion != null)
+				return false;
+		} else if (!produccion.equals(other.produccion))
+			return false;
+		return true;
+	}
 }

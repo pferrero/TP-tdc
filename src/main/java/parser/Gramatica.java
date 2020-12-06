@@ -1,9 +1,7 @@
 package parser;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -72,17 +70,17 @@ public class Gramatica {
      * Se fija si toda la cadena es nulleable, siendo nulleables las variables
      * que están en el parámetro nulleables.
      */
-    private boolean esNulleable(Collection<String> nulleables, String cadena) {
-        boolean hayTerminales = cadena
-                .codePoints()
-                .mapToObj(c -> String.valueOf((char) c))
-                .anyMatch(Produccion::esTerminal);
-        if (hayTerminales)
-            return false;
-        return cadena.codePoints()
-                .mapToObj(c -> String.valueOf((char) c))
-                .allMatch(nulleables::contains);
-    }
+//    private boolean esNulleable(Collection<String> nulleables, String cadena) {
+//        boolean hayTerminales = cadena
+//                .codePoints()
+//                .mapToObj(c -> String.valueOf((char) c))
+//                .anyMatch(Produccion::esTerminal);
+//        if (hayTerminales)
+//            return false;
+//        return cadena.codePoints()
+//                .mapToObj(c -> String.valueOf((char) c))
+//                .allMatch(nulleables::contains);
+//    }
 
 //    public Collection<String> getSimbolosGeneradores(){
 //        Collection<String> ret = new HashSet<>();
@@ -184,5 +182,13 @@ public class Gramatica {
         Gramatica other = (Gramatica) obj;
         return producciones.equals(other.producciones);
     }
+
+	public Produccion getProd_inicial() {
+		return prod_inicial;
+	}
+
+	public void setProd_inicial(Produccion prod_inicial) {
+		this.prod_inicial = prod_inicial;
+	}
     
 }
