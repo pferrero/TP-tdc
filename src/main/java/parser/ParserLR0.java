@@ -1,6 +1,5 @@
 package parser;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.Iterator;
