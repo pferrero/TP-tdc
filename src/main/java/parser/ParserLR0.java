@@ -20,26 +20,24 @@ public class ParserLR0 {
 	}
 	
 	public HashSet<Item> getItems() 
-	{   if (this.items == null)
-    {
-        this.items = new HashSet<Item>();
-        
-        Produccion firstProd = this.gramatica.getProd_inicial();
-        
-        this.items.add(new Item(firstProd, 0));//S' -> .S
-        this.items.add(new Item(firstProd, 1)); //S' -> S.
-        
-        Iterator<Produccion> producciones = this.gramatica.getProducciones().iterator();
-        while(producciones.hasNext())
-        {
-        	Produccion prod = producciones.next();
-            for (int i = 0; i < prod.getLadoDerecho().size(); i++)
-            {
-                this.items.add(new Item(prod, i));
-            }
-        }
-    }
-    	return this.items;
+	{   
+		if (this.items == null)
+			generarItems();
+		return this.items;
+	}
+
+	private void generarItems() {
+		this.items = new HashSet<Item>();
+		Produccion firstProd = this.gramatica.getProd_inicial();
+		this.items.add(new Item(firstProd, 0));//S' -> .S
+		this.items.add(new Item(firstProd, 1)); //S' -> S.
+		Iterator<Produccion> producciones = this.gramatica.getProducciones().iterator();
+		while(producciones.hasNext())
+		{
+			Produccion prod = producciones.next();
+			for (int i = 0; i < prod.getLadoDerecho().size(); i++)
+				this.items.add(new Item(prod, i));
+		}
 	}
 	
     private HashSet<Item> clausuraItem(HashSet<Item> items)
@@ -47,14 +45,12 @@ public class ParserLR0 {
         HashSet<Item> clausura = new HashSet<Item>(); 
         //preparo el conjunto de items output
         //por cada item 
-
         for (Item item : items)
         {
             clausura.add(item);
             for(Item itemClausura : clausura)
             {
                 Caracter ctr = itemClausura.GetCaracterLadoDerecho();//E -> T. E -> .T
-
                 if (ctr != null)
                 {
                     HashSet<Item> temp = (HashSet<Item>) this.getItems()
@@ -70,16 +66,16 @@ public class ParserLR0 {
     
     public HashSet<Item> IrA(HashSet<Item> items, Caracter caracter)
     {
-            HashSet<Item> conjunto = new HashSet<Item>();
+    	HashSet<Item> conjunto = new HashSet<Item>();
 
-            for(Item item : items)
-            {
-                if (item.GetCaracterLadoDerecho().equals(caracter))
-                {
-                    conjunto.add(new Item(item.getProduccion(), item.getPosicion() + 1));
-                }
-            }
-            return clausuraItem(conjunto);
+    	for(Item item : items)
+    	{
+    		if (item.GetCaracterLadoDerecho().equals(caracter))
+    		{
+    			conjunto.add(new Item(item.getProduccion(), item.getPosicion() + 1));
+    		}
+    	}
+    	return clausuraItem(conjunto);
     }
     
 	public void generarGramatica(String filePath) 
@@ -92,30 +88,23 @@ public class ParserLR0 {
 			String linea = reader.getLine(i);
 			if(!validator.isValid(linea, Produccion.EXP_PRODUCCION))
 				throw new InputMismatchException("Error al leer el archivo. Produccion invalida");
+			linea = linea.trim().replaceAll("(\\s)", "");
 			this.gramatica.agregarProduccion(new Produccion(linea));
 		}
 	}
-	
-	/// <summary>
-    /// Crea la coleccion elementos o estados LR(0), junto con sus acciones: (shift, goto, acept, reduce)
-    /// </summary>
-    public HashSet<TablaSimbolo> LR()
-    {
-        HashSet<TablaSimbolo> T = new HashSet<TablaSimbolo>();
 
-        Item inicial = this.getItems().stream().findFirst().get();
-        
+	/// Crea la coleccion elementos o estados LR(0), junto con sus acciones: (shift, goto, acept, reduce)
+    public HashSet<ConjuntoItem> LR()
+    {
+        HashSet<ConjuntoItem> T = new HashSet<ConjuntoItem>(); //Conjunto de estados del AFD
+        Item inicial = this.getItems().stream().findFirst().get(); //Tomo el primer item de los que se generaron
         HashSet<Item> clausura = new HashSet<Item>();
         clausura.add(inicial);
-        
-        int stateIndex = 1;
-
-        T.add(new TablaSimbolo(clausura, stateIndex++));
-
-        for (int i = 0; i < T.size(); i++)
+        clausura = clausuraItem(clausura); //hago la clausura de todos los items
+        int stateIndex = 0;
+        T.add(new ConjuntoItem(clausura, stateIndex)); //agrego el estado inicial
+        for (ConjuntoItem I : T)
         {
-            TablaSimbolo I = T.stream().findFirst().get();
-
             for(Item item : I.getItems())
             {
                 Caracter X = item.GetCaracterLadoDerecho();
@@ -124,57 +113,52 @@ public class ParserLR0 {
                 {//si es el ultimo caracter
                     if (X != item.getProduccion().getLadoDerecho().get(item.getProduccion().getLadoDerecho().size()-1))
                     {
-                        TablaSimbolo estado = new TablaSimbolo(IrA(I.getItems(), X), stateIndex);
-
+                        ConjuntoItem estado = new ConjuntoItem(IrA(I.getItems(), X), stateIndex);
+                        //agrego el estado
                         if (!T.add(estado))
-                        {
-//                            estado = T.Single(ee => ee == estado); //ver que se hace aca
-                        }
+                        	estado = getEstado(T,estado);
                         else stateIndex++;
-                        
+                        //agrego las transiciones del estado
                         if(Produccion.esVariable(X.getSimbolo()) && !I.getAcciones().containsKey(X))
-                        	I.getAcciones().put(X, TablaAccion.IrA(estado));
+                        	I.agregarAccion(X, TablaAccion.IrA(estado));
                         else if(Produccion.esTerminal(X.getSimbolo()) && !I.getAcciones().containsKey(X))
-                        	I.getAcciones().put(X, TablaAccion.Shift(estado));
+                        	I.agregarAccion(X, TablaAccion.Shift(estado));
                     }
                     else 
                     { 
-                    	I.getAcciones().put(X, new TablaAccion(TipoTablaAccion.Aceptar, null, null)); 
+                    	I.agregarAccion(X, new TablaAccion(TipoTablaAccion.Aceptar, null, null)); 
                     }
                 }
-
+            }
+        }
+        return LRReduce(T);
+    }
+    
+    private ConjuntoItem getEstado(HashSet<ConjuntoItem> estados, ConjuntoItem estado) {
+    	ConjuntoItem estadoOutput = null;
+    	for(ConjuntoItem e : estados) {
+    		if(e.equals(estado))
+    			estadoOutput = estado;
+    	}
+    	return estadoOutput;
+    }
+    
+    /// Calcula el conjunto de acciones de reduccion LR(0)
+    private HashSet<ConjuntoItem> LRReduce(HashSet<ConjuntoItem> T)
+    {
+        for(ConjuntoItem I : T)
+        {
+            for(Item A : I.getItems())
+            {
+                if (A.IsEndPosition())
+                    I.agregarAccion(new Terminal(""), new TablaAccion(TipoTablaAccion.Reducir, null, A.getProduccion()));
             }
         }
         return T;
     }
 	
-	//accion()
-	//reduce()
-	//shift()
-	
 	public static void main(String[] args) {
 		String test = "abc";
 		System.out.println(test.charAt(0));
-		
-		ArrayList<String> lista = new ArrayList<String>();
-		
-		lista.add("X{23");
-		lista.add("X02");
-		lista.add("X03");
-		lista.add("X05");
-		lista.add("X13");
-		lista.add("X01");
-		lista.add("X10");
-		lista.add("X04");
-		lista.add("X0");
-		lista.add("X12");
-		lista.add("X6");
-		lista.add("X8");
-		lista.add("X7");
-		
-		System.out.println(lista);
 	}
-	
-
-	
 }

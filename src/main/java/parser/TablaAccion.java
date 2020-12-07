@@ -6,22 +6,21 @@ public class TablaAccion
 {
 	private Produccion reduccion;
 	private TipoTablaAccion tipo;
+	private ConjuntoItem destino;
 	
-	private TablaSimbolo destino;
-	
-	public TablaAccion(TipoTablaAccion tipo, TablaSimbolo destino, Produccion reduccion)
+	public TablaAccion(TipoTablaAccion tipo, ConjuntoItem destino, Produccion reduccion)
 	{
 		this.destino = destino;
 		this.tipo = tipo;
 		this.reduccion = reduccion;
 	}
 
-	public static TablaAccion Shift(TablaSimbolo destino)
+	public static TablaAccion Shift(ConjuntoItem destino)
 	{
 		return new TablaAccion(TipoTablaAccion.Desplazar, destino, null);
 	}
 
-	public static TablaAccion IrA(TablaSimbolo destino)
+	public static TablaAccion IrA(ConjuntoItem destino)
 	{
 		return new TablaAccion(TipoTablaAccion.IrA, destino, null);
 	}
@@ -42,11 +41,11 @@ public class TablaAccion
 		this.tipo = tipo;
 	}
 
-	public TablaSimbolo getDestino() {
+	public ConjuntoItem getDestino() {
 		return destino;
 	}
 
-	public void setDestino(TablaSimbolo destino) {
+	public void setDestino(ConjuntoItem destino) {
 		this.destino = destino;
 	}
 }
