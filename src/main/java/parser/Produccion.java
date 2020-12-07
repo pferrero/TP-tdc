@@ -2,14 +2,16 @@ package parser;
 
 import java.util.List;
 
+
 public class Produccion {
 
 	private Variable       ladoIzquierdo;
     private List<Caracter> ladoDerecho;
     public static final String EXP_PRODUCCION = "(\\X_{\\d+}\\s->\\s((\\X_{\\d+})|[a-z])+)";
+    public static final String EXP_SIMBOLO = "(\\X_{\\d+})|[a-z]";
     
     public Produccion(String produccion) {
-        // Expresión regular que parsee 
+    	
         // X_{1} -> X_{4}abX_{3}d
     }
     

@@ -1,5 +1,6 @@
 package parser;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.Iterator;
@@ -12,6 +13,8 @@ public class ParserLR0 {
 	
 	private Gramatica gramatica;
 	private HashSet<Item> items;
+	private ReadFile reader = new ReadFile();
+	private Validator validator = new Validator();
 	
 	public ParserLR0(Gramatica gramatica)
 	{
@@ -79,17 +82,26 @@ public class ParserLR0 {
     
 	public void generarGramatica(String filePath) 
 	{
-		ReadFile reader = new ReadFile();
-		Validator validator = new Validator();
-		reader.assingFile(filePath);
-		for(int i = 0; i < reader.linesNumber(); i++) 
+		this.reader.assingFile(filePath);
+		for(int i = 0; i < this.reader.linesNumber(); i++) 
 		{
-			String linea = reader.getLine(i);
-			if(!validator.isValid(linea, Produccion.EXP_PRODUCCION))
+			String linea = this.reader.getLine(i);
+			if(!this.validator.isValid(linea, Produccion.EXP_PRODUCCION))
 				throw new InputMismatchException("Error al leer el archivo. Produccion invalida");
-			linea = linea.trim().replaceAll("(\\s)", "");
-			this.gramatica.agregarProduccion(new Produccion(linea));
+			generarProduccion(linea);
 		}
+	}
+	
+
+	private void generarProduccion(String linea) {
+		String[] lados = linea.split("->");
+		String izq = lados[0].trim().replaceAll("(\\s)", "");  
+		String der = lados[1].trim().replaceAll("(\\s)", "");
+		ArrayList<Caracter> ladoDerecho = new ArrayList<Caracter>();
+		for(String simbolo : validator.getAllMatchs(der, Produccion.EXP_SIMBOLO)) {
+			ladoDerecho.add(new Terminal(simbolo));
+		}
+		this.gramatica.agregarProduccion(new Produccion(izq, ladoDerecho));
 	}
 
 	/// Crea la coleccion elementos o estados LR(0), junto con sus acciones: (shift, goto, acept, reduce)
