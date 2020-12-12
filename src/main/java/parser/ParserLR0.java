@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.Iterator;
+import java.util.Stack;
 import java.util.stream.Collectors;
+
+import org.apache.commons.cli.ParseException;
 
 import Utilities.ReadFile;
 import Utilities.Validator;
@@ -91,7 +94,6 @@ public class ParserLR0 {
 			generarProduccion(linea);
 		}
 	}
-	
 
 	private void generarProduccion(String linea) {
 		String[] lados = linea.split("->");
@@ -101,7 +103,10 @@ public class ParserLR0 {
 		for(String simbolo : validator.getAllMatchs(der, Produccion.EXP_SIMBOLO)) {
 			ladoDerecho.add(new Terminal(simbolo));
 		}
-		this.gramatica.agregarProduccion(new Produccion(izq, ladoDerecho));
+		Produccion prod = new Produccion(izq, ladoDerecho);
+		this.gramatica.agregarProduccion(prod);
+		if(izq.equals("X_{1}"))
+			this.gramatica.setProd_inicial(prod);
 	}
 
 	/// Crea la coleccion elementos o estados LR(0), junto con sus acciones: (shift, goto, acept, reduce)
@@ -167,9 +172,65 @@ public class ParserLR0 {
         }
         return T;
     }
-	
-	public static void main(String[] args) {
-		String test = "abc";
-		System.out.println(test.charAt(0));
+    
+    public void parserLR(String w) throws ParseException {
+    	String parserString = w;
+    	HashSet<ConjuntoItem> estados = this.LR();
+    	Stack<ConjuntoItem> pilaEstados = new Stack<ConjuntoItem>();
+    	pilaEstados.add(estados.stream().findFirst().get());
+    	
+    	while(!pilaEstados.isEmpty()) {
+    		ConjuntoItem estado = pilaEstados.pop();
+        	Caracter caracterActual = new Terminal(String.valueOf(parserString.charAt(0)));
+        	
+    		if(estado.getAcciones().get(caracterActual).getTipo() == TipoTablaAccion.Desplazar)
+        	{
+        		shift(pilaEstados, estado, caracterActual);
+            	parserString.substring(1);
+        	}
+        	else if(estado.getAcciones().get(caracterActual).getTipo() == TipoTablaAccion.Reducir)
+        	//vuelvo a donde indica
+        	{
+        		reduce(pilaEstados, estado, caracterActual); 
+        	}
+        	else if(estado.getAcciones().get(caracterActual).getTipo() == TipoTablaAccion.Aceptar) 
+        	{
+        		//termino;
+        		System.out.println("El string '" + w +"' fue reconocido exitosamente por la gramatica");
+        		return;
+        	}
+       		else
+       			error(estado.getId(),caracterActual.getSimbolo());
+    	}
+    }
+
+	private void shift(Stack<ConjuntoItem> pilaEstados, ConjuntoItem estado, Caracter caracterActual) {
+		pilaEstados.add(estado.getAcciones().get(caracterActual).getDestino());
 	}
+
+	private void reduce(Stack<ConjuntoItem> pilaEstados, ConjuntoItem estado, Caracter caracterActual) {
+		Produccion prodAReducir = estado.getAcciones().get(caracterActual).getReduccion();
+		//elimino estados por la longitud del lado derecho de la produccion
+		int cantCaracteres = prodAReducir.getLadoDerecho().size();
+		for (int i = 0; i< cantCaracteres;i++) {
+			pilaEstados.pop();
+		}
+		//Ir a sobre la variable del lado izquierdo
+		Caracter variable = prodAReducir.getLadoIzquierdo();
+		shift(pilaEstados, estado, variable);
+	}
+    
+    private void error(int estado, String simbolo) throws ParseException 
+    {
+    	throw new ParseException("Error de parsing. No se encontraron acciones para el caracter '" 
+    							+ simbolo + "' en el estado [" + estado + "].");
+	}
+
+	public static void main(String[] args) {
+    	String w = "((id))";
+    	while(w.length() != 0) {
+    		w = w.substring(1);
+        	System.out.println(w);
+    	}
+    }
 }
