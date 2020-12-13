@@ -1,6 +1,5 @@
 package gramaticas;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -10,10 +9,19 @@ import java.util.stream.Stream;
 
 import com.google.common.base.CharMatcher;
 
+/**
+ * Representa un conversor de gramáticas a forma normal de Chomsky.
+ *
+ */
 public class Chomsky {
 
     LimpiadorDeGramaticas ldg = new LimpiadorDeGramaticas();
 
+    /**
+     * Convierte la gramática g a FNC.
+     * @param g Una gramática
+     * @return Una gramática equivalente a g en FNC.
+     */
     public Gramatica FNC(Gramatica g) {
         return Stream.of(g)
         // Paso 1: se limpia la gramática
@@ -33,8 +41,7 @@ public class Chomsky {
         Stack<Character> terminales = new Stack<>();
         Map<Character, Character> terminalesVariables = new HashMap<>();
         
-        Arrays.asList("A","B","C","D","E","F","G","H","I","J","K","L","M","N",
-                "Ñ","O","P","Q","R","S","T","U","V","W","X","Y","Z")
+        Produccion.variablesAceptadas()
                 .stream()
                 .filter(var -> !g.getVariables().contains(var))
                 .map(var -> var.charAt(0))
@@ -69,8 +76,7 @@ public class Chomsky {
         Gramatica g1 = new Gramatica();
         Stack<String> variablesDisponibles = new Stack<>();
 
-        Arrays.asList("A","B","C","D","E","F","G","H","I","J","K","L","M","N",
-                "Ñ","O","P","Q","R","S","T","U","V","W","X","Y","Z")
+        Produccion.variablesAceptadas()
                 .stream()
                 .filter(var -> !g.getVariables().contains(var))
                 .forEach(variablesDisponibles::push);

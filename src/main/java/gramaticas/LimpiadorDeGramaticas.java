@@ -13,6 +13,10 @@ import java.util.stream.Stream;
 
 import com.google.common.base.CharMatcher;
 
+/**
+ * Representa un limpiador de gramáticas.
+ *
+ */
 public class LimpiadorDeGramaticas {
 
     /**
