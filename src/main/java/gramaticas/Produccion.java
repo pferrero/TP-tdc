@@ -122,7 +122,7 @@ public class Produccion {
      * mayúscula). 
      * @return Una lista con los strings que pueden ser usados como variables.
      */
-    public List<String> variablesAceptadas() {
+    public static List<String> variablesAceptadas() {
         return Arrays.asList("A","B","C","D","E","F","G","H","I","J","K","L",
                 "M","N","Ñ","O","P","Q","R","S","T","U","V","W","X","Y","Z");
     }

@@ -1,6 +1,5 @@
 package gramaticas;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,6 +15,11 @@ import com.google.common.base.CharMatcher;
 
 public class LimpiadorDeGramaticas {
 
+    /**
+     * Elimina las producciones epsilon de la gramática g.
+     * @param g Una gramática.
+     * @return Una nueva gramática equivalente a g pero sin producciones epsilon
+     */
     public Gramatica eliminarProduccionesEpsilon(Gramatica g) {
         Gramatica g1 = new Gramatica();
         Set<String> nulleables = Collections.unmodifiableSet(g.variablesNulleables());
@@ -39,19 +43,18 @@ public class LimpiadorDeGramaticas {
             return ret;
         }
         // Reemplazo las variables nulleables por si hay repetidas
-        Map<Character, String> repetidos = new HashMap<>();
-        Stack<Character> variablesDisponibles = new Stack<>();
-        Arrays.asList('A','B','C','D','E','F','G','H','I','J','K','L','M','N',
-                '�','O','P','Q','R','S','T','U','V','W','X','Y','Z')
+        Map<String, String> repetidos = new HashMap<>();
+        Stack<String> variablesDisponibles = new Stack<>();
+        Produccion.variablesAceptadas()
                 .stream()
-                .filter(var -> !nulleables.contains(String.valueOf(var)))
+                .filter(var -> !nulleables.contains(var))
                 .forEach(variablesDisponibles::push);
         String ladoDerecho = prod.getLadoDerecho();
         for (char nulleable : simbolosNulleables.toCharArray()) {
              CharMatcher cm = CharMatcher.is(nulleable);
             while (cm.matchesAnyOf(ladoDerecho)) {
-                char var = variablesDisponibles.pop();
-                ladoDerecho = ladoDerecho.replaceFirst(String.valueOf(nulleable), String.valueOf(var));
+                String var = variablesDisponibles.pop();
+                ladoDerecho = ladoDerecho.replaceFirst(String.valueOf(nulleable), var);
                 repetidos.put(var, String.valueOf(nulleable));
             }
         }
@@ -63,7 +66,7 @@ public class LimpiadorDeGramaticas {
             for (char simbolo : ladoDerecho.toCharArray()) {
                 if (Produccion.esTerminal(String.valueOf(simbolo)))
                     nuevoLadoDerecho.append(simbolo);
-                else if (!repetidos.containsKey(simbolo)) // es var pero no nulleable
+                else if (!repetidos.containsKey(String.valueOf(simbolo))) // es var pero no nulleable
                     nuevoLadoDerecho.append(simbolo);
                 else if (subconjunto.indexOf(simbolo) != -1)
                     nuevoLadoDerecho.append(simbolo);
@@ -73,8 +76,8 @@ public class LimpiadorDeGramaticas {
                 // antes de agregar la produccion a ret.
                 String aux = nuevoLadoDerecho.toString();
                 for (char c : ladoDerecho.toCharArray()) {
-                    if (repetidos.containsKey(c))
-                        aux = CharMatcher.is(c).replaceFrom(aux, repetidos.get(c));
+                    if (repetidos.containsKey(String.valueOf(c)))
+                        aux = CharMatcher.is(c).replaceFrom(aux, repetidos.get(String.valueOf(c)));
                 }
                 ret.add(new Produccion(prod.getLadoIzquierdo(), aux));
             }
@@ -128,9 +131,10 @@ public class LimpiadorDeGramaticas {
         }
     }
 
-    /*
-     * Recibe una gramática g y devuelve una gramática g1 sin producciones
-     * unitarias.
+    /**
+     * Elimina las producciones unitarias de la gramática g.
+     * @param g Una gramática.
+     * @return Una gramática equivalente a g sin producciones unitarias.
      */
     public Gramatica eliminarProduccionesUnitarias(Gramatica g) {
         Gramatica g1 = new Gramatica();
@@ -170,6 +174,11 @@ public class LimpiadorDeGramaticas {
         return ret;
     }
 
+    /**
+     * Elimina los símbolos no generadores de la gramática g.
+     * @param g Una gramática
+     * @return Una gramática equivalente a g sin símbolos no generadores.
+     */
     public Gramatica eliminarSimbolosNoGeneradores(Gramatica g) {
         Gramatica g1 = new Gramatica();
         Collection<String> simbolosGeneradores = g.getSimbolosGeneradores();
@@ -188,6 +197,11 @@ public class LimpiadorDeGramaticas {
         return g1;
     }
 
+    /**
+     * Elimina los símbolos inalcanzables de g.
+     * @param g Una gramática
+     * @return Una gramática equivalente a g sin símbolos inalcanzables
+     */
     public Gramatica eliminarSimbolosInalcanzables(Gramatica g) {
         Gramatica g1 = new Gramatica();
         Collection<String> simbolosAlcanzables = g.getSimbolosAlcanzables();
@@ -197,6 +211,13 @@ public class LimpiadorDeGramaticas {
         return g1;
     }
 
+    /**
+     * Limpia la gramática g.
+     * Limpiar la gramática es eliminar producciones epsilon, producciones 
+     * unitarias, símbolos no generadores y símbolos inalcanzables.
+     * @param g Una gramática
+     * @return Una gramática equivalente a g limpia
+     */
     public Gramatica limpiarGramatica(Gramatica g) {
         return Stream.of(g)
             .map(this::eliminarProduccionesEpsilon)
