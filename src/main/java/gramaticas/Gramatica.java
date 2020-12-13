@@ -7,22 +7,33 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Representa una gramática. Se puede crear una gramática vacía e ir 
+ * extendiendola. Para extender la gramática se agregan las producciones una por
+ * una. Los terminales y las variables son las que están presentes en las
+ * producciones que se van agregando a la gramática.
+ * @author Pablo
+ *
+ */
 public class Gramatica {
 
     private Set<String>  terminales;
     private Set<String>  variables;
     private Set<Produccion> producciones;
-    
+
+    /**
+     * Crea una gramática vacía.
+     */
     public Gramatica() {
-        inicializarConjuntos();
-    }
-    
-    private void inicializarConjuntos() {
         this.producciones = new HashSet<Produccion>();
         this.terminales   = new HashSet<>();
         this.variables    = new HashSet<>();
     }
-    
+
+    /**
+     * Agrega una producción a esta gramática.
+     * @param prod La producción para agregar a la gramática.
+     */
     public void agregarProduccion(Produccion prod) {
         this.variables.add(prod.getLadoIzquierdo());
         for (int i = 0; i < prod.getLadoDerecho().length(); i++) {
@@ -35,7 +46,13 @@ public class Gramatica {
         }
         producciones.add(prod);
     }
-    
+
+    /**
+     * Devuelve el conjunto de variables nulleables en esta gramática.
+     * Una variable nulleable es una variable que deriva en cero o más pasos a
+     * epsilon.
+     * @return Un conjunto de variables nulleables presentes en esta gramática.
+     */
     public Set<String> variablesNulleables() {
         Set<String> nulleables = new HashSet<>();
         // Caso base: Son nulleables las variables que tienen una producción
@@ -81,6 +98,13 @@ public class Gramatica {
                 .allMatch(nulleables::contains);
     }
 
+    /**
+     * Devuelve una colección de símbolos generadores.
+     * Los símbolos generadores son símbolos (terminales o variables) que
+     * derivan en cero o más pasos a un string compuesto únicamente de 
+     * terminales.
+     * @return Una colección con los símbolos generadores de esta gramática.
+     */
     public Collection<String> getSimbolosGeneradores(){
         Collection<String> ret = new HashSet<>();
         /*
@@ -111,6 +135,12 @@ public class Gramatica {
         return ret;
     }
 
+    /**
+     * Devuelve una colección de símbolos alcanzables.
+     * Los símbolos alcanzables son los símbolos que pueden ser alcanzados
+     * derivando cero o más pasos a S (el símbolo inicial).
+     * @return Una colección con los símbolos alcanzables de esta gramática.
+     */
     public Collection<String> getSimbolosAlcanzables() {
         Collection<String> alcanzables = new HashSet<>();
         // Caso base: se puede alcanzar el símbolo inicial S
@@ -137,25 +167,49 @@ public class Gramatica {
         return alcanzables;
     }
 
+    /**
+     * Devuelve una colección con la lista de variables de la gramática.
+     * @return La colección de variables de esta gramática.
+     */
     public Collection<String> getVariables(){
         return new HashSet<String>(this.variables);
     }
-    
+
+    /**
+     * Devuelve una colección con la lista de producciones de la gramática.
+     * @return La colección de producciones de esta gramática.
+     */
     public Collection<Produccion> getProducciones() {
         return new HashSet<Produccion>(this.producciones);
     }
 
+    /**
+     * Devuelve una colección con la lista de terminales de la gramática.
+     * @return La colección de terminales de esta gramática.
+     */
     public Collection<String> getTerminales(){
         return new HashSet<>(this.terminales);
     }
 
+    /**
+     * Devuelve una colección con las producciones unitarias de la gramática.
+     * Una producción unitaria es una producción cuyo lado derecho consiste
+     * únicamente de una variable.
+     * @return La colección de producciones unitarias de esta gramática.
+     */
     public Collection<Produccion> getProduccionesUnitarias() {
         return this.producciones
                 .stream()
                 .filter(Produccion::esUnitaria)
                 .collect(Collectors.toSet());
     }
-    
+
+    /**
+     * Devuelve una colección de las producciones de la variable var.
+     * Si la variable no pertenece a la gramática devuelve una colección vacía.
+     * @param var Una variable.
+     * @return Una colección de producciones de var.
+     */
     public Collection<Produccion> getProduccionesDeVariable(String var) {
         return this.producciones
                 .stream().filter(p -> p.getLadoIzquierdo().equals(var))
