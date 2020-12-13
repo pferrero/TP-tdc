@@ -75,4 +75,37 @@ public class ProcesarTest {
         assertFalse(afd.procesar("cc"));
         assertFalse(afd.procesar("bbb"));
     }
+
+    /*
+     * Procesar strings en un AFD vacío.
+     */
+    @Test
+    public void testProcesarStringEnAFDVacio() {
+        AFD afd = new AFD();
+        assertFalse(afd.procesar("a"));
+    }
+
+    /*
+     * Procesar strings en un AFD con un solo estado y que acepta el lenguaje
+     * compuesto por cualquier cantidad de a's.
+     */
+    @Test
+    public void testProcesarStringEnAFDConUnSoloEstado() {
+        Automata automata = new Automata();
+        Estado<Integer> estado = new Estado<Integer>(1);
+        Transicion<String> transicion = new Transicion<String>(estado, estado, "a");
+        estado.setTransiciones(transicion);
+        automata.addEstados(estado);
+        automata.addEstadosAceptacion(estado);
+        automata.setEstadoInicial(estado);
+        automata.setAlfabeto(new HashSet<>(Arrays.asList("a")));
+        AFD afd = new AFD();
+        afd.conversionAFN(automata);
+        
+        assertTrue(afd.procesar(""));
+        assertTrue(afd.procesar("a"));
+        assertTrue(afd.procesar("aa"));
+        assertTrue(afd.procesar("aaa"));
+        assertFalse(afd.procesar("b"));
+    }
 }
