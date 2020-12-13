@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.ParseException;
@@ -227,10 +229,16 @@ public class ParserLR0 {
 	}
 
 	public static void main(String[] args) {
-    	String w = "((id))";
-    	while(w.length() != 0) {
-    		w = w.substring(1);
-        	System.out.println(w);
-    	}
+    	
+//    	String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ArchivoGramaticaTest.txt";
+//		Gramatica gramatica = new Gramatica();
+//		ParserLR0 parserlr0 = new ParserLR0(gramatica);
+//		parserlr0.generarGramatica(filePath);
+		
+//		String EXP_PRDUCCION = "((([X][_][{])\\d+[}])|[a-z])";
+//		String exp = "X_{2}";
+//		Pattern pat = Pattern.compile(EXP_PRDUCCION);
+//		Matcher mat = pat.matcher(exp);
+//		System.out.println(mat.matches());
     }
 }

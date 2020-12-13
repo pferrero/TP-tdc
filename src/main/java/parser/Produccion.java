@@ -7,8 +7,8 @@ public class Produccion {
 
 	private Variable       ladoIzquierdo;
     private List<Caracter> ladoDerecho;
-    public static final String EXP_PRODUCCION = "(\\X_{\\d+}\\s->\\s((\\X_{\\d+})|[a-z])+)";
-    public static final String EXP_SIMBOLO = "(\\X_{\\d+})|[a-z]";
+    public static final String EXP_PRODUCCION = "(([X][_][{])\\d+[}]\\s?->\\s?((([X][_][{])\\d+[}])|[a-z])+)";
+    public static final String EXP_SIMBOLO = "(([X][_][{])\\\\d+[}])|[a-z])";
     
     public Produccion(String produccion) {
     	
@@ -36,7 +36,7 @@ public class Produccion {
     }
     
     public static boolean esVariable(String a) {
-        return a.matches("(\\X_{\\d+})");
+        return a.matches("(([X][_][{])\\\\d+[}])");
     }
 
     public boolean esUnitaria() {
