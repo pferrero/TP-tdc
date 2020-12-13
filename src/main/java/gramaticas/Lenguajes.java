@@ -9,8 +9,20 @@ import java.util.Set;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableSet;
 
+/**
+ * Representa un manipulador de lenguajes.
+ * Tiene métodos para saber si un string pertenece a un lenguaje.
+ *
+ */
 public class Lenguajes {
 
+    /**
+     * Indica si el string w pertenece a la gramática g usando el algorítmo
+     * CYK.
+     * @param g Un string
+     * @param w Una gramática en FNC
+     * @return true si w pertenece a L(g), false si no
+     */
     public boolean CYK(Gramatica g, String w) {
         Map<Indices, Set<Character>> triangulo = new HashMap<Indices, Set<Character>>(w.length() * w.length());
         Collection<Produccion> producciones = ImmutableSet.copyOf(g.getProducciones());
