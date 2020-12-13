@@ -56,9 +56,25 @@ public class ProcesarTest {
     public void testStringDeLongitud3OMenosPunto16() {
         AFD afd = new AFD();
         afd.conversionAFN(getAutomataPunto16());
-        assertTrue(afd.procesar("bab"));
-        assertTrue(afd.procesar("bb"));
+        assertTrue(afd.procesar("aac"));
         assertTrue(afd.procesar("abb"));
+        assertTrue(afd.procesar("acb"));
+        assertTrue(afd.procesar("bab"));
+        assertTrue(afd.procesar("bbb"));
+        assertTrue(afd.procesar("bba"));
+        assertTrue(afd.procesar("ccc"));
+        assertTrue(afd.procesar("caa"));
+        assertTrue(afd.procesar("cac"));
+        assertTrue(afd.procesar("cca"));
+        assertTrue(afd.procesar("cba"));
+        assertTrue(afd.procesar("cab"));
+        assertTrue(afd.procesar("cbb"));
+        assertTrue(afd.procesar("acc"));
+        assertTrue(afd.procesar("ac"));
+        assertTrue(afd.procesar("bb"));
+        assertTrue(afd.procesar("cc"));
+        assertTrue(afd.procesar("cb"));
+        assertTrue(afd.procesar("ca"));
         assertTrue(afd.procesar("c"));
     }
 
@@ -72,8 +88,9 @@ public class ProcesarTest {
         afd.conversionAFN(getAutomataPunto16());
         assertFalse(afd.procesar("b"));
         assertFalse(afd.procesar("a"));
-        assertFalse(afd.procesar("cc"));
-        assertFalse(afd.procesar("bbb"));
+        assertFalse(afd.procesar("ba"));
+        assertFalse(afd.procesar("aaa"));
+        assertFalse(afd.procesar("aab"));
     }
 
     /*
@@ -106,6 +123,24 @@ public class ProcesarTest {
         assertTrue(afd.procesar("a"));
         assertTrue(afd.procesar("aa"));
         assertTrue(afd.procesar("aaa"));
+    }
+
+    /*
+     * Procesar un string que no pertenece al lenguaje en un AFD
+     */
+    @Test
+    public void testProcesarStringQueNoPerteneceAlLenguaje() {
+        Automata automata = new Automata();
+        Estado<Integer> estado = new Estado<Integer>(1);
+        Transicion<String> transicion = new Transicion<String>(estado, estado, "a");
+        estado.setTransiciones(transicion);
+        automata.addEstados(estado);
+        automata.addEstadosAceptacion(estado);
+        automata.setEstadoInicial(estado);
+        automata.setAlfabeto(new HashSet<>(Arrays.asList("a")));
+        AFD afd = new AFD();
+        afd.conversionAFN(automata);
+        
         assertFalse(afd.procesar("b"));
     }
 }

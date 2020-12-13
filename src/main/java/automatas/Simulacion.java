@@ -79,13 +79,16 @@ private String resultado;
     }
     
     /**
-     * Método para simular un automata sin importar si es determinista o no deterministas
+     * Mï¿½todo para simular un automata sin importar si es determinista o no deterministas
      * 
      * @param regex recibe la cadena a simular 
      * @param automata recibe el automata a ser simulado
      */
     public boolean simular(String regex, Automata automata)
     {
+        if (automata.getEstados().size() == 0) {
+            return false;
+        }
         Estado inicial = automata.getEstadoInicial();
         ArrayList<Estado> estados = automata.getEstados();
         ArrayList<Estado> aceptacion = new ArrayList(automata.getEstadosAceptacion());

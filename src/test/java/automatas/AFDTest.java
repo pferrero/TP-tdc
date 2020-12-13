@@ -75,8 +75,8 @@ public class AFDTest {
         eafndConvertido.conversionAFN(eafndConUnEstado);
         assertEquals("AFD", eafndConvertido.getAfd().getTipo());
         assertEquals(1, eafndConvertido.getAfd().getEstados().size());
-        // Asumo que el estado 1 siempre es el estado inicial
-        assertEquals(new Integer(1), eafndConvertido.getAfd().getEstados(0).getId());
+        // Asumo que el estado 0 siempre es el estado inicial
+        assertEquals(new Integer(0), eafndConvertido.getAfd().getEstados(0).getId());
     }
 
     /*
@@ -126,16 +126,25 @@ public class AFDTest {
     }
 
     /*
-     * Convertir un eAFND con 2 estados y una transición epsilon entre ellos
-     * a un AFD. El estado 1 es el inicial y el 2 el final.
+     * Convertir el siguiente eAFND a AFD:
+     * a un AFD. 
+     * a (alfabeto)
+     * 2 (cant. estados)
+     * 2 (estado final)
+     * 1, a -> 2
+     * 1, E -> 2
+     * El estado 1 es el inicial y el 2 el final.
+     * El resultado es un AFD con 3 estados y 2 finales.
      */
     @Test
     public void testConversioneAFNDConTransicionEpsilon() {
         Automata eafnd = new AFND_TransEpsilon().getAutomata();
         Estado estado1 = new Estado<Integer>(1);
         Estado estado2 = new Estado<Integer>(2);
-        Transicion<String> transicion = new Transicion<String>(estado1, estado2, "a");
-        estado1.setTransiciones(transicion);
+        Transicion<String> transicion1 = new Transicion<String>(estado1, estado2, "a");
+        Transicion<String> transicion2 = new Transicion<String>(estado1, estado2, "E");
+        estado1.setTransiciones(transicion1);
+        estado1.setTransiciones(transicion2);
         eafnd.addEstados(estado1);
         eafnd.addEstados(estado2);
         eafnd.setEstadoInicial(estado1);
@@ -145,8 +154,8 @@ public class AFDTest {
         AFD eafndConvertido = new AFD();
         eafndConvertido.conversionAFN(eafnd);
         assertEquals("AFD", eafndConvertido.getAfd().getTipo());
-        assertEquals(1, eafndConvertido.getAfd().getEstados().size());
-        assertEquals(1, eafndConvertido.getAfd().getEstadosAceptacion().size());
+        assertEquals(3, eafndConvertido.getAfd().getEstados().size());
+        assertEquals(2, eafndConvertido.getAfd().getEstadosAceptacion().size());
     }
 
     /*

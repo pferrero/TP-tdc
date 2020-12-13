@@ -25,6 +25,11 @@ public class AFD
      * @param afn AFN
      */
     public void conversionAFN(Automata afn){
+        if (afn.getEstados().size() == 0) {
+            this.afd = afn;
+            this.afd.setTipo("AFD");
+            return;
+        }
         //se crea una estructura vacia
         Automata automata = new Automata();
         //se utiliza una cola como la estructura para guardar los subconjuntos a analizar
@@ -105,7 +110,7 @@ public class AFD
 	}
    
     /**
-     * Método para quitar los estados de trampa de un autómata
+     * Mï¿½todo para quitar los estados de trampa de un autï¿½mata
      * @param afd
      * @return AFD con menos estados 
      */
@@ -132,7 +137,7 @@ public class AFD
         }
         /*2. una vez ya sabido que estados son los de trampa
         * se quitan las transiciones que van hacia ese estado
-        * y al final se elimina el estado del autómata
+        * y al final se elimina el estado del autï¿½mata
         */
         for (int i = 0;i<estadoAQuitar.size();i++){
               for (int j = 0;j<afd.getEstados().size();j++){
@@ -154,7 +159,7 @@ public class AFD
                 //eliminar el estao al final
                 afd.getEstados().remove(estadoAQuitar.get(i));
         }
-        //3. arreglar la numeración cuando se quita un estado
+        //3. arreglar la numeraciï¿½n cuando se quita un estado
         for (int i = 0;i<afd.getEstados().size();i++){
             afd.getEstados().get(i).setId(i);
         }   
@@ -162,7 +167,7 @@ public class AFD
     }
    
     /**
-     * Automata de prueba para comprobar la minimización
+     * Automata de prueba para comprobar la minimizaciï¿½n
      * @return Automata
      */
     public Automata automataPrueba(){
