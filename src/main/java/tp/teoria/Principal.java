@@ -11,6 +11,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import Utilities.ReadFile;
+import automatas.AFD;
+import automatas.AFND_TransEpsilon;
 import gramaticas.Chomsky;
 import gramaticas.Gramatica;
 import gramaticas.Lenguajes;
@@ -93,6 +95,7 @@ public class Principal {
             ejecutarPunto1(pathArchivo);
             break;
         case 2:
+            ejecutarPunto2(pathArchivo);
             break;
         case 3:
             break;
@@ -120,6 +123,26 @@ public class Principal {
         while (!w.equals("quit")) {
             System.out.println(leng.CYK(g, w));
             System.out.print("CYK > ");
+            w = scanner.next();
+        }
+        scanner.close();
+    }
+
+    private static void ejecutarPunto2(String path) {
+        AFND_TransEpsilon eAFND = new AFND_TransEpsilon();
+        eAFND.buildAutomata(path);
+        AFD afd = new AFD();
+        afd.conversionAFN(eAFND.getAutomata());
+        promptProcesar(afd);
+    }
+
+    private static void promptProcesar(AFD afd) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Procesar > ");
+        String w = scanner.next();
+        while (!w.equals("quit")) {
+            System.out.println(afd.procesar(w));
+            System.out.print("Procesar > ");
             w = scanner.next();
         }
         scanner.close();
