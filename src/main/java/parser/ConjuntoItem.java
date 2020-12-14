@@ -6,18 +6,18 @@ import java.util.HashSet;
 public class ConjuntoItem {
 
 	private HashSet<Item> items;
-    private HashMap<Caracter, TablaAccion> acciones;
+    private HashMap<Simbolo, TablaAccion> acciones;
     private int id;
     
 	public ConjuntoItem(HashSet<Item> items, int id)
 	{
 		this.items = items;
-		this.acciones = new HashMap<Caracter, TablaAccion>();
+		this.acciones = new HashMap<Simbolo, TablaAccion>();
 		this.id = id;
 		
 	}
 	
-	public void agregarAccion(Caracter caracter, TablaAccion accion) {
+	public void agregarAccion(Simbolo caracter, TablaAccion accion) {
 		this.acciones.put(caracter, accion);
 	}
 
@@ -29,11 +29,11 @@ public class ConjuntoItem {
 		this.items = items;
 	}
 
-	public HashMap<Caracter, TablaAccion> getAcciones() {
+	public HashMap<Simbolo, TablaAccion> getAcciones() {
 		return acciones;
 	}
 
-	public void setAcciones(HashMap<Caracter, TablaAccion> acciones) {
+	public void setAcciones(HashMap<Simbolo, TablaAccion> acciones) {
 		this.acciones = acciones;
 	}
 

@@ -5,28 +5,28 @@ import java.util.List;
 
 public class Produccion {
 
-	private Variable       ladoIzquierdo;
-    private List<Caracter> ladoDerecho;
+	private Simbolo       ladoIzquierdo;
+    private List<Simbolo> ladoDerecho;
     public static final String EXP_PRODUCCION = "(([X][_][{])\\d+[}]\\s?->\\s?((([X][_][{])\\d+[}])|[a-z])+)";
-    public static final String EXP_SIMBOLO = "(([X][_][{])\\\\d+[}])|[a-z])";
+    public static final String EXP_SIMBOLO = "((([X][_][{])\\d+[}])|[a-z])";
     
     public Produccion(String produccion) {
     	
         // X_{1} -> X_{4}abX_{3}d
     }
     
-    public Produccion(String izq, List<Caracter> der) 
+    public Produccion(String izq, List<Simbolo> der) 
     {
-    	this.ladoIzquierdo = new Variable(izq);
+    	this.ladoIzquierdo = new Simbolo(izq,TipoSimbolo.Variable);
     	this.ladoDerecho = der;
     }
     
-    public Variable getLadoIzquierdo() 
+    public Simbolo getLadoIzquierdo() 
     {
     	return this.ladoIzquierdo;
     }
     
-    public List<Caracter> getLadoDerecho() 
+    public List<Simbolo> getLadoDerecho() 
     {
     	return this.ladoDerecho;
     }
@@ -36,7 +36,7 @@ public class Produccion {
     }
     
     public static boolean esVariable(String a) {
-        return a.matches("(([X][_][{])\\\\d+[}])");
+        return a.matches("(([X][_][{])\\d+[}])");
     }
 
     public boolean esUnitaria() {

@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.InputMismatchException;
 import java.util.Iterator;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.cli.ParseException;
@@ -37,7 +35,7 @@ public class ParserLR0 {
 		this.items = new HashSet<Item>();
 		Produccion firstProd = this.gramatica.getProd_inicial();
 		this.items.add(new Item(firstProd, 0));//S' -> .S
-		this.items.add(new Item(firstProd, 1)); //S' -> S.
+		this.items.add(new Item(firstProd, 1)); //S' -> S.$
 		Iterator<Produccion> producciones = this.gramatica.getProducciones().iterator();
 		while(producciones.hasNext())
 		{
@@ -57,7 +55,7 @@ public class ParserLR0 {
             clausura.add(item);
             for(Item itemClausura : clausura)
             {
-                Caracter ctr = itemClausura.GetCaracterLadoDerecho();//E -> T. E -> .T
+                Simbolo ctr = itemClausura.GetCaracterLadoDerecho();//E -> T. E -> .T
                 if (ctr != null)
                 {
                     HashSet<Item> temp = (HashSet<Item>) this.getItems()
@@ -71,7 +69,7 @@ public class ParserLR0 {
         return clausura;
     }
     
-    public HashSet<Item> IrA(HashSet<Item> items, Caracter caracter)
+    public HashSet<Item> IrA(HashSet<Item> items, Simbolo caracter)
     {
     	HashSet<Item> conjunto = new HashSet<Item>();
 
@@ -101,41 +99,74 @@ public class ParserLR0 {
 		String[] lados = linea.split("->");
 		String izq = lados[0].trim().replaceAll("(\\s)", "");  
 		String der = lados[1].trim().replaceAll("(\\s)", "");
-		ArrayList<Caracter> ladoDerecho = new ArrayList<Caracter>();
+		ArrayList<Simbolo> ladoDerecho = new ArrayList<Simbolo>();
 		for(String simbolo : validator.getAllMatchs(der, Produccion.EXP_SIMBOLO)) {
-			ladoDerecho.add(new Terminal(simbolo));
+			TipoSimbolo tipoSimbolo = null; 
+			if (Produccion.esTerminal(simbolo)) 
+			{
+				tipoSimbolo = TipoSimbolo.Terminal;
+	        } 
+			else 
+			{
+				tipoSimbolo = TipoSimbolo.Variable;
+			}
+			 
+			ladoDerecho.add(new Simbolo(simbolo, tipoSimbolo));
 		}
 		Produccion prod = new Produccion(izq, ladoDerecho);
 		this.gramatica.agregarProduccion(prod);
-		if(izq.equals("X_{1}"))
+		if(izq.equals("X_{1}") && this.gramatica.getProd_inicial() == null)
 			this.gramatica.setProd_inicial(prod);
 	}
 
 	/// Crea la coleccion elementos o estados LR(0), junto con sus acciones: (shift, goto, acept, reduce)
     public HashSet<ConjuntoItem> LR()
     {
-        HashSet<ConjuntoItem> T = new HashSet<ConjuntoItem>(); //Conjunto de estados del AFD
-        Item inicial = this.getItems().stream().findFirst().get(); //Tomo el primer item de los que se generaron
+    	HashSet<ConjuntoItem> resultado = new HashSet<ConjuntoItem>();
+    	//aumento la gramatica
+    	ArrayList<Simbolo> variableInicial = new ArrayList<Simbolo>();
+    	variableInicial.add(this.gramatica.getProd_inicial().getLadoIzquierdo());
+    	variableInicial.add(new Simbolo("$", TipoSimbolo.EndOfFile));
+    	Produccion nuevaProdInicial = new Produccion("X_{0}",variableInicial);
+    	this.gramatica.agregarProduccion(nuevaProdInicial);
+    	this.gramatica.setProd_inicial(nuevaProdInicial);
+    	
+        Stack<ConjuntoItem> T = new Stack<ConjuntoItem>(); //Conjunto de estados del AFD
+        Item inicial = getFirstItem(); //Tomo el primer item de los que se generaron
+        System.out.println(this.getItems());
         HashSet<Item> clausura = new HashSet<Item>();
         clausura.add(inicial);
         clausura = clausuraItem(clausura); //hago la clausura de todos los items
         int stateIndex = 0;
-        T.add(new ConjuntoItem(clausura, stateIndex)); //agrego el estado inicial
-        for (ConjuntoItem I : T)
+        ConjuntoItem estadoInicial = new ConjuntoItem(clausura, stateIndex);
+        T.add(estadoInicial); //agrego el estado inicial
+        stateIndex++;
+        resultado.add(estadoInicial);
+        
+        
+        while (!T.empty())
         {
+        	ConjuntoItem I = T.pop();
+            System.out.println(I.getItems());
+
             for(Item item : I.getItems())
             {
-                Caracter X = item.GetCaracterLadoDerecho();
+                Simbolo X = item.GetCaracterLadoDerecho();
                 //si es vacio
 				if (X != null && !X.getSimbolo().equals(""))
                 {//si es el ultimo caracter
-                    if (X != item.getProduccion().getLadoDerecho().get(item.getProduccion().getLadoDerecho().size()-1))
+                    if (X.getTipo() != TipoSimbolo.EndOfFile )
                     {
                         ConjuntoItem estado = new ConjuntoItem(IrA(I.getItems(), X), stateIndex);
-                        //agrego el estado
-                        if (!T.add(estado))
-                        	estado = getEstado(T,estado);
-                        else stateIndex++;
+                        //me fijo si hay un estado con esos items
+                        if (existeEstado(resultado,estado)) {
+                        	estado = getEstado(resultado,estado);
+                        	}
+                        else { 
+                        	T.add(estado);
+                        	resultado.add(estado);
+                        	stateIndex++;
+                        }
                         //agrego las transiciones del estado
                         if(Produccion.esVariable(X.getSimbolo()) && !I.getAcciones().containsKey(X))
                         	I.agregarAccion(X, TablaAccion.IrA(estado));
@@ -149,14 +180,43 @@ public class ParserLR0 {
                 }
             }
         }
-        return LRReduce(T);
+        HashSet<ConjuntoItem> estados = agregarEstados(LRReduce(resultado));
+        return estados;
     }
+    
+    private boolean existeEstado(HashSet<ConjuntoItem> resultado, ConjuntoItem estado) {
+		for(ConjuntoItem ci : resultado) {
+			if(ci.getItems().equals(estado.getItems()))
+				return true;
+		}
+		return false;
+	}
+
+
+	private HashSet<ConjuntoItem> agregarEstados(HashSet<ConjuntoItem> lrReduce) {
+		HashSet<ConjuntoItem> estados = new HashSet<>();
+		for(ConjuntoItem item : lrReduce) {
+			estados.add(item);
+		}
+		return estados;
+	}
+
+	private Item getFirstItem() {
+		Item first = null;
+		for(Item item : this.getItems()) {
+			if(item.getProduccion().equals(getGramatica().getProd_inicial())) {
+				first = item;
+			}
+		}
+		System.out.println("Primer item: " + first);
+		return first;
+	}
     
     private ConjuntoItem getEstado(HashSet<ConjuntoItem> estados, ConjuntoItem estado) {
     	ConjuntoItem estadoOutput = null;
     	for(ConjuntoItem e : estados) {
-    		if(e.equals(estado))
-    			estadoOutput = estado;
+    		if(e.getItems().equals(estado.getItems()))
+    			estadoOutput = e;
     	}
     	return estadoOutput;
     }
@@ -168,8 +228,13 @@ public class ParserLR0 {
         {
             for(Item A : I.getItems())
             {
-                if (A.IsEndPosition())
-                    I.agregarAccion(new Terminal(""), new TablaAccion(TipoTablaAccion.Reducir, null, A.getProduccion()));
+                if (A.IsEndPosition()) {
+                    
+                	for(Simbolo terminal : this.gramatica.getTerminales()) {
+                		I.agregarAccion(terminal, new TablaAccion(TipoTablaAccion.Reducir, null, A.getProduccion()));
+                	}
+            		I.agregarAccion(new Simbolo("$",TipoSimbolo.EndOfFile), new TablaAccion(TipoTablaAccion.Reducir, null, A.getProduccion()));
+                }
             }
         }
         return T;
@@ -178,24 +243,25 @@ public class ParserLR0 {
     public void parserLR(String w) throws ParseException {
     	String parserString = w;
     	HashSet<ConjuntoItem> estados = this.LR();
-    	Stack<ConjuntoItem> pilaEstados = new Stack<ConjuntoItem>();
-    	pilaEstados.add(estados.stream().findFirst().get());
-    	
+    	ArrayList<ConjuntoItem> pilaEstados = new ArrayList<ConjuntoItem>();
+    	pilaEstados.add(getEstadoInicial(estados));
+
     	while(!pilaEstados.isEmpty()) {
-    		ConjuntoItem estado = pilaEstados.pop();
-        	Caracter caracterActual = new Terminal(String.valueOf(parserString.charAt(0)));
+    		ConjuntoItem estado = pilaEstados.get(pilaEstados.size()-1);
+        	Simbolo caracterActual = new Simbolo(String.valueOf(parserString.charAt(0)),TipoSimbolo.Terminal);
         	
-    		if(estado.getAcciones().get(caracterActual).getTipo() == TipoTablaAccion.Desplazar)
+    		if(estado.getAcciones().get(caracterActual).getTipo() != null && estado.getAcciones().get(caracterActual).getTipo() == TipoTablaAccion.Desplazar)
         	{
-        		shift(pilaEstados, estado, caracterActual);
-            	parserString.substring(1);
+    			//shift
+    			shift(pilaEstados, estado, caracterActual);
+            	parserString = parserString.substring(1);
         	}
-        	else if(estado.getAcciones().get(caracterActual).getTipo() == TipoTablaAccion.Reducir)
+        	else if(estado.getAcciones().get(caracterActual).getTipo() != null && estado.getAcciones().get(caracterActual).getTipo() == TipoTablaAccion.Reducir)
         	//vuelvo a donde indica
         	{
-        		reduce(pilaEstados, estado, caracterActual); 
+        		reduce(pilaEstados, estado, caracterActual);
         	}
-        	else if(estado.getAcciones().get(caracterActual).getTipo() == TipoTablaAccion.Aceptar) 
+        	else if(estado.getAcciones().get(caracterActual).getTipo() != null && estado.getAcciones().get(caracterActual).getTipo() == TipoTablaAccion.Aceptar) 
         	{
         		//termino;
         		System.out.println("El string '" + w +"' fue reconocido exitosamente por la gramatica");
@@ -206,19 +272,30 @@ public class ParserLR0 {
     	}
     }
 
-	private void shift(Stack<ConjuntoItem> pilaEstados, ConjuntoItem estado, Caracter caracterActual) {
+	private ConjuntoItem getEstadoInicial(HashSet<ConjuntoItem> estados) {
+		ConjuntoItem estadoInicial = null;
+		for(ConjuntoItem CI : estados) {
+			if(CI.getId() == 0) {
+				estadoInicial = CI;
+			}
+		}
+		return estadoInicial;
+	}
+
+	private void shift(ArrayList<ConjuntoItem> pilaEstados, ConjuntoItem estado, Simbolo caracterActual) {
 		pilaEstados.add(estado.getAcciones().get(caracterActual).getDestino());
 	}
 
-	private void reduce(Stack<ConjuntoItem> pilaEstados, ConjuntoItem estado, Caracter caracterActual) {
+	private void reduce(ArrayList<ConjuntoItem> pilaEstados, ConjuntoItem estado, Simbolo caracterActual) {
 		Produccion prodAReducir = estado.getAcciones().get(caracterActual).getReduccion();
 		//elimino estados por la longitud del lado derecho de la produccion
 		int cantCaracteres = prodAReducir.getLadoDerecho().size();
 		for (int i = 0; i< cantCaracteres;i++) {
-			pilaEstados.pop();
+			pilaEstados.remove(pilaEstados.size()-1);
 		}
 		//Ir a sobre la variable del lado izquierdo
-		Caracter variable = prodAReducir.getLadoIzquierdo();
+		Simbolo variable = prodAReducir.getLadoIzquierdo();
+		estado = pilaEstados.get(pilaEstados.size()-1);//me quedo con el ultimo estado luego de reducir
 		shift(pilaEstados, estado, variable);
 	}
     
@@ -227,18 +304,9 @@ public class ParserLR0 {
     	throw new ParseException("Error de parsing. No se encontraron acciones para el caracter '" 
     							+ simbolo + "' en el estado [" + estado + "].");
 	}
-
-	public static void main(String[] args) {
-    	
-//    	String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ArchivoGramaticaTest.txt";
-//		Gramatica gramatica = new Gramatica();
-//		ParserLR0 parserlr0 = new ParserLR0(gramatica);
-//		parserlr0.generarGramatica(filePath);
-		
-//		String EXP_PRDUCCION = "((([X][_][{])\\d+[}])|[a-z])";
-//		String exp = "X_{2}";
-//		Pattern pat = Pattern.compile(EXP_PRDUCCION);
-//		Matcher mat = pat.matcher(exp);
-//		System.out.println(mat.matches());
+    
+    public Gramatica getGramatica() {
+    	return this.gramatica;
     }
+  	
 }

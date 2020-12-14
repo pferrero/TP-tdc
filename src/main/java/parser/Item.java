@@ -27,7 +27,7 @@ public class Item {
 	}
 	
 	
-	public Caracter GetCaracterLadoDerecho()
+	public Simbolo GetCaracterLadoDerecho()
 	{
 		if (this.posicion >= this.produccion.getLadoDerecho().size())
 			return null;
@@ -35,7 +35,7 @@ public class Item {
 		return this.produccion.getLadoDerecho().get(posicion);
 	}
 
-	public Caracter GetCaracterLadoIzquierdo()
+	public Simbolo GetCaracterLadoIzquierdo()
 	{
 		if (this.posicion >= this.produccion.getLadoDerecho().size() + 1 || this.posicion == 0)
 			return null;
@@ -48,7 +48,7 @@ public class Item {
 		return this.posicion == this.produccion.getLadoDerecho().size();
 	}
 
-	public Caracter GetLastSymbol()
+	public Simbolo GetLastSymbol()
 	{
 		return this.produccion.getLadoDerecho().get(this.produccion.getLadoDerecho().size()-1);
 	}
@@ -80,4 +80,11 @@ public class Item {
 			return false;
 		return true;
 	}
+	
+	@Override
+	public String toString()
+	{
+		return this.getProduccion().toString() + ". Posicion del item: " + this.posicion + "\n"; 
+	}
+	
 }

@@ -7,8 +7,8 @@ import java.util.stream.Collectors;
 
 public class Gramatica {
 
-    private Set<Terminal>  terminales;
-    private Set<Variable>  variables;
+    private Set<Simbolo>  terminales;
+    private Set<Simbolo>  variables;
     private Set<Produccion> producciones;
     private Produccion prod_inicial;
     
@@ -18,18 +18,19 @@ public class Gramatica {
     
     private void inicializarConjuntos() {
         this.producciones = new HashSet<Produccion>();
-        this.terminales   = new HashSet<>();
-        this.variables    = new HashSet<>();
+        this.terminales   = new HashSet<Simbolo>();
+        this.variables    = new HashSet<Simbolo>();
     }
     
     public void agregarProduccion(Produccion prod) {
         this.variables.add(prod.getLadoIzquierdo());
         for (int i = 0; i < prod.getLadoDerecho().size(); i++) {
-            Caracter caracter = prod.getLadoDerecho().get(i);
+            Simbolo caracter = prod.getLadoDerecho().get(i);
             if (Produccion.esTerminal(caracter.getSimbolo())) {
-                terminales.add((Terminal) caracter);
+                terminales.add(caracter);
             } else {
-                variables.add((Variable) caracter);
+            	if(!variables.contains(caracter))
+            		variables.add(caracter);
             }
         }
         producciones.add(prod);
@@ -138,16 +139,16 @@ public class Gramatica {
 //        return alcanzables;
 //    }
 
-    public Collection<Variable> getVariables(){
-        return new HashSet<Variable>(this.variables);
+    public Collection<Simbolo> getVariables(){
+        return new HashSet<Simbolo>(this.variables);
     }
     
     public Collection<Produccion> getProducciones() {
         return new HashSet<Produccion>(this.producciones);
     }
 
-    public Collection<Terminal> getTerminales(){
-        return new HashSet<>(this.terminales);
+    public Collection<Simbolo> getTerminales(){
+        return new HashSet<Simbolo>(this.terminales);
     }
 
     public Collection<Produccion> getProduccionesUnitarias() {

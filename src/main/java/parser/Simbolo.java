@@ -1,15 +1,19 @@
 package parser;
 
-public abstract class Caracter {
+enum TipoSimbolo {Variable,Terminal,EndOfFile,Empty} 
+
+public class Simbolo {
 	
 	private String simbolo;
+	private TipoSimbolo tipo;
 	
-	public Caracter(String simbolo) 
+	public Simbolo(String simbolo, TipoSimbolo tipo) 
 	{
 		this.simbolo = simbolo;
+		this.setTipo(tipo);
 	}
 	
-	protected String getSimbolo() {
+	public String getSimbolo() {
 		return this.simbolo;
 	}
 
@@ -29,7 +33,7 @@ public abstract class Caracter {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Caracter other = (Caracter) obj;
+		Simbolo other = (Simbolo) obj;
 		if (simbolo == null) {
 			if (other.simbolo != null)
 				return false;
@@ -38,6 +42,17 @@ public abstract class Caracter {
 		return true;
 	}
 	
-	
+	@Override
+	public String toString() {
+		return this.simbolo;
+	}
 
+	public TipoSimbolo getTipo() {
+		return tipo;
+	}
+
+	private void setTipo(TipoSimbolo tipo) {
+		this.tipo = tipo;
+	}
+	
 }
