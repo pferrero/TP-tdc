@@ -47,6 +47,7 @@ public class LimpiadorDeGramaticas {
             return ret;
         }
         // Reemplazo las variables nulleables por si hay repetidas
+
         Map<String, String> repetidos = new HashMap<>();
         Stack<String> variablesDisponibles = new Stack<>();
         Produccion.variablesAceptadas()
