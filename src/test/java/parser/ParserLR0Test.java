@@ -13,7 +13,7 @@ public class ParserLR0Test {
 
 	@Test(expected = InputMismatchException.class)
 	public void errorGramaticaTest() {
-		String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ErrorGramaticaTest.txt";
+		String filePath  = "src/test/resources/ErrorGramaticaTest.txt";
 		Gramatica gramatica = new Gramatica();
 		ParserLR0 parserlr0 = new ParserLR0(gramatica);
 		parserlr0.generarGramatica(filePath);
@@ -21,7 +21,7 @@ public class ParserLR0Test {
 	
 	@Test 
 	public void generarGramaticaTest() {
-		String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ArchivoGramaticaTest.txt";
+		String filePath  = "src/test/resources/ArchivoGramaticaTest.txt";
 		Gramatica gramatica = new Gramatica();
 		ParserLR0 parserlr0 = new ParserLR0(gramatica);
 		parserlr0.generarGramatica(filePath);
@@ -46,7 +46,7 @@ public class ParserLR0Test {
 		simbolos.add(new Simbolo("X_{1}", TipoSimbolo.Variable));
 		simbolos.add(new Simbolo("b",TipoSimbolo.Terminal));
 		Item itemTest = new Item(new Produccion("X_{1}", simbolos), 1);
-		String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ItemsTest.txt";
+		String filePath  = "src/test/resources/ItemsTest.txt";
 		Gramatica gramatica = new Gramatica();
 		ParserLR0 parserlr0 = new ParserLR0(gramatica);
 		parserlr0.generarGramatica(filePath);
@@ -59,7 +59,7 @@ public class ParserLR0Test {
 	
 	@Test
 	public void irATerminalTest() {
-		String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ItemsTest.txt";
+		String filePath  = "src/test/resources/ItemsTest.txt";
 		Gramatica gramatica = new Gramatica();
 		ParserLR0 parserlr0 = new ParserLR0(gramatica);
 		parserlr0.generarGramatica(filePath);
@@ -71,7 +71,7 @@ public class ParserLR0Test {
 	
 	@Test
 	public void irAVariableTest() {
-		String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ItemsTest.txt";
+		String filePath  = "src/test/resources/ItemsTest.txt";
 		Gramatica gramatica = new Gramatica();
 		ParserLR0 parserlr0 = new ParserLR0(gramatica);
 		parserlr0.generarGramatica(filePath);
@@ -83,7 +83,7 @@ public class ParserLR0Test {
 	
 	@Test
 	public void generarLRTest() {
-		String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ItemsTest.txt";
+		String filePath  = "src/test/resources/ItemsTest.txt";
 		Gramatica gramatica = new Gramatica();
 		ParserLR0 parserlr0 = new ParserLR0(gramatica);
 		parserlr0.generarGramatica(filePath);
@@ -112,7 +112,7 @@ public class ParserLR0Test {
 
 	@Test
 	public void parserLRTest() {
-		String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ItemsTest.txt";
+		String filePath  = "src/test/resources/ItemsTest.txt";
 		Gramatica gramatica = new Gramatica();
 		ParserLR0 parserlr0 = new ParserLR0(gramatica);
 		parserlr0.generarGramatica(filePath);
@@ -125,7 +125,7 @@ public class ParserLR0Test {
 	
 	@Test(expected = Exception.class)
 	public void parserLRFailTest() throws ParseException {
-		String filePath  = "C:\\Users\\Administrator\\Desktop\\ArchivosTest\\ItemsTest.txt";
+		String filePath  = "src/test/resources/ItemsTest.txt";
 		Gramatica gramatica = new Gramatica();
 		ParserLR0 parserlr0 = new ParserLR0(gramatica);
 		parserlr0.generarGramatica(filePath);

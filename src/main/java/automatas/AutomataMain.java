@@ -6,7 +6,7 @@ public class AutomataMain {
 	public static final char EPSILON_CHAR = EPSILON.charAt(0);
 
 	public static void main(String[] args) {
-		String file = System.getenv("Userprofile") + "\\Downloads\\Teoria de la computacion\\afnd-epsilon.txt";
+		String file = "src/test/resources/afnd-epsilon.txt";
 		System.out.println(file);
 		
 		AFND_TransEpsilon afnd = new AFND_TransEpsilon();

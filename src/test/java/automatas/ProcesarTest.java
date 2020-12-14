@@ -143,4 +143,26 @@ public class ProcesarTest {
         
         assertFalse(afd.procesar("b"));
     }
+    
+    /*
+     * Test para procesar string con un autamata afnd - e convertido a AFD. Generado a partir de un archivo de texto 
+     */
+    
+    @Test
+    public void testProcesarStringDesdeAFNDEnArchivo() {
+    	String file = "src/test/resources/afnd-epsilon.txt";
+		System.out.println(file);
+		
+		AFND_TransEpsilon afnd = new AFND_TransEpsilon();
+		afnd.buildAutomata(file);
+		System.out.println(afnd.getAutomata());
+		System.out.println("Convertir AFND a AFD");
+		AFD afd = new AFD();
+		afd.conversionAFN(afnd.getAutomata());
+		
+		Simulacion simulacion = new Simulacion();
+		assertTrue(simulacion.simular("aa", afd.getAfd()));
+		assertFalse(simulacion.simular("ba", afd.getAfd()));
+    }
+    
 }
